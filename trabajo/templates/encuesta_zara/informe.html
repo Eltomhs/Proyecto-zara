@@ -1,0 +1,168 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA — Informe de Encuesta{% endblock %}
+
+{% block content %}
+<section class="container-xxl py-4">
+  <h1 class="h3 mb-3">Zara, Fast Fashion y Sostenibilidad</h1>
+
+  <!-- KPIs -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="p-3 border rounded-3 bg-white h-100 text-center">
+        <div class="small text-muted">TOTAL RESPUESTAS</div>
+        <div class="fs-2 fw-bold" id="k_total">—</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="p-3 border rounded-3 bg-white h-100 text-center">
+        <div class="small text-muted">CONOCE FAST FASHION</div>
+        <div class="fs-2 fw-bold" id="k_conoce">—</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="p-3 border rounded-3 bg-white h-100 text-center">
+        <div class="small text-muted">ASOCIA A ZARA</div>
+        <div class="fs-2 fw-bold" id="k_asocia">—</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="p-3 border rounded-3 bg-white h-100 text-center">
+        <div class="small text-muted">PROM. IMPORTANCIA (1–5)</div>
+        <div class="fs-2 fw-bold" id="k_prom">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-lg-4"><div class="p-3 border rounded-3 bg-white"><h6>¿Ha escuchado “Fast Fashion”?</h6><div style="height:340px"><canvas id="ch_conoce"></canvas></div></div></div>
+    <div class="col-12 col-lg-4"><div class="p-3 border rounded-3 bg-white"><h6>¿Asocia a Zara con Fast Fashion?</h6><div style="height:340px"><canvas id="ch_asocia"></canvas></div></div></div>
+    <div class="col-12 col-lg-4"><div class="p-3 border rounded-3 bg-white"><h6>¿Dónde suele comprar en Zara?</h6><div style="height:340px"><canvas id="ch_canal"></canvas></div></div></div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Importancia de la sostenibilidad (1–5)</h6><div style="height:360px"><canvas id="ch_likert"></canvas></div></div></div>
+    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>¿Compraría sostenible si sube el precio?</h6><div style="height:360px"><canvas id="ch_pagar"></canvas></div></div></div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Factor que más influye en la compra</h6><div style="height:360px"><canvas id="ch_factor"></canvas></div></div></div>
+    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Información de sostenibilidad deseada</h6><div style="height:360px"><canvas id="ch_info"></canvas></div></div></div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Distribución por edad</h6><div style="height:360px"><canvas id="ch_edad"></canvas></div></div></div>
+    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Distribución por género</h6><div style="height:360px"><canvas id="ch_genero"></canvas></div></div></div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
+
+<script>
+(() => {
+  const PALETTE = {
+    mocha:   '#837060',
+    tendril: '#A9BE70',
+    rose:    '#D19C97',
+    safari:  '#B6A68E',
+    garden:  '#F1E8D9',
+    ink:     '#2c3e50'
+  };
+
+  if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
+  if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
+
+  Chart.defaults.font.family = "'Inter', system-ui, Segoe UI, Roboto, Arial, sans-serif";
+  Chart.defaults.color = PALETTE.ink;
+
+  const baseOpts = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 800, easing: 'easeOutQuart' },
+    plugins: { legend: { labels: { usePointStyle: true } }, tooltip: { enabled: true } }
+  };
+
+  const donut = (labels, data, colors) => ({
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0 }] },
+    options: { ...baseOpts, cutout: '58%', plugins: { ...baseOpts.plugins, legend: { position: 'bottom' } } }
+  });
+
+  const bars = (labels, data, color) => ({
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: color, borderRadius: 6, maxBarThickness: 48 }] },
+    options: {
+      ...baseOpts,
+      plugins: { ...baseOpts.plugins, legend: { display: false }, datalabels: { color: '#333', anchor: 'end', align: 'end', formatter:v=>v>0?v:'' } },
+      scales: { y: { beginAtZero:true, grid:{ color: '#e9e9e9' } }, x: { grid: { display:false } } }
+    }
+  });
+
+  const barsLikert = (labels, data, color, promedio) => ({
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: color, borderRadius: 6, maxBarThickness: 48 }] },
+    options: {
+      ...baseOpts,
+      plugins: {
+        ...baseOpts.plugins,
+        legend: { display: false },
+        datalabels: { color: '#333', anchor: 'end', align: 'end', formatter:v=>v>0?v:'' },
+        annotation: promedio ? {
+          annotations: {
+            likertAvg: {
+              type: 'line',
+              xMin: (promedio - 1), xMax: (promedio - 1), scaleID: 'x',
+              borderColor: PALETTE.mocha, borderDash: [6,6], borderWidth: 3,
+              label: { enabled: true, content: `Promedio ${promedio}`, position: 'start', backgroundColor: PALETTE.mocha, color: '#fff', padding: 6 }
+            }
+          }
+        } : {}
+      },
+      scales: { y: { beginAtZero:true, grid:{ color: '#e9e9e9' } }, x: { grid: { display:false } } }
+    }
+  });
+
+  function fillKpis(kpis){
+    const pct = v => (v == null ? '—' : `${v}%`);
+    document.getElementById('k_total').textContent = kpis.total_respuestas ?? '—';
+    document.getElementById('k_conoce').textContent = pct(kpis.pct_conoce);
+    document.getElementById('k_asocia').textContent = pct(kpis.pct_asocia);
+    document.getElementById('k_prom').textContent   = (kpis.promedio_importancia ?? '—');
+  }
+
+  // Render de charts
+  function renderCharts(charts){
+    new Chart(document.getElementById('ch_conoce'), donut(charts.conoce.labels, charts.conoce.data, [PALETTE.rose, PALETTE.safari]));
+    new Chart(document.getElementById('ch_asocia'), donut(charts.asocia.labels, charts.asocia.data, [PALETTE.mocha, PALETTE.safari]));
+    new Chart(document.getElementById('ch_canal'),  bars(charts.canal.labels,  charts.canal.data,  PALETTE.rose));
+    new Chart(document.getElementById('ch_likert'), barsLikert(charts.likert.labels, charts.likert.data, PALETTE.tendril, charts.likert.promedio));
+    new Chart(document.getElementById('ch_pagar'),  donut(charts.pagar.labels, charts.pagar.data, [PALETTE.tendril, PALETTE.garden, PALETTE.mocha]));
+    new Chart(document.getElementById('ch_factor'), bars(charts.factor.labels, charts.factor.data, PALETTE.mocha));
+    new Chart(document.getElementById('ch_info'),   bars(charts.info.labels,  charts.info.data,  PALETTE.tendril));
+    new Chart(document.getElementById('ch_edad'),   bars(charts.edad.labels,  charts.edad.data,  PALETTE.rose));
+    new Chart(document.getElementById('ch_genero'), donut(charts.genero.labels, charts.genero.data, [PALETTE.safari, PALETTE.rose, PALETTE.garden]));
+  }
+
+  // Carga de datos JSON
+  fetch("{% url 'encuesta_json' %}", { cache: 'no-store' })
+    .then(r => r.json())
+    .then(({kpis, charts}) => {
+      fillKpis(kpis);
+      renderCharts(charts);
+    })
+    .catch(err => {
+      console.error(err);
+      alert('No se pudo cargar /api/encuesta.json');
+    });
+})();
+</script>
+{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+

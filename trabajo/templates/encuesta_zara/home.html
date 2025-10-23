@@ -1,0 +1,304 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA — Inicio Elegante{% endblock %}
+
+{% block content %}
+
+<style>
+  :root{
+    --safari:#B6A68E;
+    --mocha:#837060;
+    --tendril:#A9BE70;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --rose-tan:#D19C97;
+    --ink:#2c3e50;
+    --muted:#7f8c8d;
+  }
+
+  .font-serif{ font-family:"Playfair Display", Georgia, serif; }
+  .font-sans{ font-family:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+
+  /* Botones */
+  .btn-primary-custom{
+    background:var(--tendril)!important; color:#fff!important;
+    font-weight:700!important; text-transform:uppercase!important;
+    padding:0 30px!important; line-height:42px!important; border-radius:12px;
+    box-shadow:0 6px 14px rgba(0,0,0,.10)!important; border:none!important;
+    transition:transform .15s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn-primary-custom:hover{ background:var(--mocha)!important; transform:translateY(-1px); }
+
+  .btn-outline-secondary-custom{
+    background:transparent!important; color:#fff!important; border:2px solid #fff!important;
+    font-weight:700!important; text-transform:uppercase!important; padding:0 30px!important;
+    line-height:38px!important; border-radius:12px; transition:all .2s ease;
+  }
+  .btn-outline-secondary-custom:hover{ background:#fff!important; color:var(--mocha)!important; }
+
+  /* Carrusel */
+  .carousel-item-custom{
+    height:75vh; position:relative; overflow:hidden;
+  }
+  .carousel-item-custom img{
+    width:100%; height:100%; object-fit:cover; object-position:center top;
+    filter:none;
+  }
+  .carousel-caption{ bottom:12%; }
+  .carousel-caption h1,
+  .carousel-caption h2,
+  .carousel-caption p{
+    text-shadow:0 2px 6px rgba(0,0,0,.35);
+  }
+  .carousel-control-prev,
+  .carousel-control-next,
+  .carousel-indicators{ z-index:20; }
+
+  /* Responsive caption */
+  .caption-responsive{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:12%;
+    width:90%;
+    text-align:center;
+    color:#fff;
+    z-index:5;
+  }
+
+  @media (max-width:576px){
+    .carousel-item-custom{ height:58vh; }
+    .carousel-item-custom img{ filter:brightness(.78) contrast(1.05); }
+
+    .caption-responsive{
+      bottom:8%;
+      left:50%;
+      transform:translateX(-50%);
+      width:92%;
+      text-align:center;
+    }
+
+    .caption-responsive > div{
+      background:rgba(0,0,0,.45);
+      backdrop-filter:blur(2px);
+      border-radius:12px;
+      padding:10px 14px;
+      display:inline-block;
+    }
+
+    .caption-responsive h1{ font-size:1.5rem; margin-bottom:.4rem; }
+    .caption-responsive h2{ font-size:.9rem; letter-spacing:2px; }
+    .caption-responsive p{ font-size:.95rem; margin-bottom:.6rem; }
+
+    .btn-primary-custom,
+    .btn-outline-secondary-custom{
+      line-height:36px !important;
+      padding:0 20px !important;
+      border-radius:10px;
+    }
+    .carousel-indicators{ bottom:6px; }
+    .carousel-indicators [data-bs-target]{ width:8px; height:8px; }
+  }
+
+  /* Productos */
+  .product-card{
+    display:block; text-decoration:none; color:var(--ink); text-align:center;
+    border:1px solid var(--cobblestone); border-radius:18px; overflow:hidden;
+    box-shadow:0 2px 6px rgba(0,0,0,.06);
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    background:#fff; height:100%;
+  }
+  .product-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 18px rgba(0,0,0,.12);
+    border-color:var(--mocha);
+  }
+  .product-image-wrapper{ width:100%; padding-bottom:133.33%; position:relative; overflow:hidden; background:var(--gardenia); }
+  .product-card img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .4s ease; }
+  .product-card:hover img{ transform:scale(1.03); }
+  .product-label{
+    padding:14px 10px; font-weight:600; font-size:.95rem; letter-spacing:.4px;
+    background:#fff; color:var(--ink); border-top:1px solid var(--cobblestone);
+  }
+
+  /* Banner cápsula */
+  .capsula-banner{
+    height:42vh; 
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 6px 16px rgba(0,0,0,.10);
+    position:relative;
+  }
+  .capsula-banner .overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.25));
+  }
+  .capsula-banner img{
+    width:100%; height:100%;
+    object-fit:cover;
+    object-position:50% 18%; /* sube el encuadre */
+  }
+
+  @media (max-width:576px){
+    .capsula-banner{ height:48vh; }
+    .capsula-banner img{ object-position:50% 12%; }
+  }
+
+  footer{ border-color:var(--gardenia)!important; }
+</style>
+
+<!-- CARRUSEL PRINCIPAL -->
+<section class="container-fluid p-0 mb-5">
+  <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+    </div>
+
+    <div class="carousel-inner">
+      <!-- SLIDE 1 -->
+      <div class="carousel-item active carousel-item-custom">
+        <img src="{% static 'img/portada/portada.png' %}" class="d-block w-100 h-100" alt="Nueva Colección">
+        <div class="carousel-caption caption-responsive">
+          <div>
+            <h2 class="h6 fw-normal text-uppercase mb-1 font-serif">Autumn / Winter</h2>
+            <h1 class="display-3 fw-bold mb-3 font-serif">NEW ARRIVALS</h1>
+            <a href="/" class="btn btn-primary-custom">Shop Collection</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="carousel-item carousel-item-custom">
+        <img src="{% static 'img/portada/portada2.jpeg' %}" class="d-block w-100 h-100" alt="Trade-In">
+        <div class="carousel-caption caption-responsive">
+          <div>
+            <h2 class="display-5 fw-bold mb-2 font-serif">MODA CIRCULAR</h2>
+            <p class="lead mb-3 font-sans">Elegante · Responsable · Trade-In</p>
+            <a href="/tradein/" class="btn btn-outline-secondary-custom">Descubrir más</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+</section>
+
+<!-- SECCIÓN PRODUCTOS -->
+<section class="container-xxl mb-5">
+  <div class="text-center mb-4">
+    <h3 class="h2 fw-bold font-serif text-mocha">PRODUCTOS DESTACADOS</h3>
+    <p class="text-mutedx font-sans m-0">Materiales atemporales · Siluetas modernas · Inspiración natural</p>
+  </div>
+
+  <div class="row g-4 justify-content-center">
+    <div class="col-6 col-md-3">
+      <a href="#" class="product-card">
+        <div class="product-image-wrapper">
+          <img src="{% static 'img/home/zapatos.jpeg' %}" alt="Zapatos">
+        </div>
+        <div class="product-label font-sans">Mocasín Piel Charol</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="#" class="product-card">
+        <div class="product-image-wrapper">
+          <img src="{% static 'img/home/top.jpeg' %}" alt="Top">
+        </div>
+        <div class="product-label font-sans">Top Satinado Halter</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="#" class="product-card">
+        <div class="product-image-wrapper">
+          <img src="{% static 'img/home/abrigo.jpeg' %}" alt="Abrigo">
+        </div>
+        <div class="product-label font-sans">Abrigo Corto Tweed</div>
+      </a>
+    </div>
+    <div class="col-6 col-md-3">
+      <a href="#" class="product-card">
+        <div class="product-image-wrapper">
+          <img src="{% static 'img/home/carteracafe.jpeg' %}" alt="Cartera Café">
+        </div>
+        <div class="product-label font-sans">Bolso Hombro Piel</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- GALERÍA PRINCIPAL -->
+<section class="container-xxl mb-5">
+  <div class="row g-4">
+    <div class="col-12 col-md-4">
+      <a href="#" class="product-card">
+        <div class="product-image-wrapper">
+          <img src="{% static 'img/home/vestido.jpeg' %}" alt="Vestido">
+        </div>
+        <div class="product-label font-sans">Vestido con vuelo</div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
+      <a href="#" class="product-card">
+        <div class="product-image-wrapper">
+          <img src="{% static 'img/home/conjunto.jpeg' %}" alt="Conjunto">
+        </div>
+        <div class="product-label font-sans">Traje Pantalón Lino</div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
+      <a href="#" class="product-card">
+        <div class="product-image-wrapper">
+          <img src="{% static 'img/home/pañuelo.jpeg' %}" alt="Pañuelo">
+        </div>
+        <div class="product-label font-sans">Pañuelo Estampado Seda</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- BANNER FINAL -->
+<section class="container-xxl mb-5" style="margin-bottom:6rem;">
+  <a href="#" class="text-decoration-none text-white">
+    <section class="position-relative capsula-banner">
+      <img src="{% static 'img/portada/portadafin.jpeg' %}" alt="Colección Cápsula" class="w-100 h-100">
+      <div class="overlay"></div>
+      <div class="position-absolute top-50 start-50 translate-middle text-center text-white">
+        <h3 class="display-6 fw-bold mb-2 font-serif">COLECCIÓN CÁPSULA</h3>
+        <p class="lead mb-0 font-sans" style="color:#F1E8D9;">Diseño exclusivo · Materiales premium · Edición limitada</p>
+      </div>
+    </section>
+  </a>
+</section>
+
+<footer class="text-center py-4 mt-5 border-top">
+  <p class="mb-0 small text-muted font-sans">© 2025 Zara | Proyecto académico | Diseño inspirado en sostenibilidad</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const el = document.getElementById('heroCarousel');
+  if (window.bootstrap && bootstrap.Carousel) {
+    bootstrap.Carousel.getOrCreateInstance(el, {
+      interval: 5000,
+      ride: 'carousel',
+      pause: false,
+      touch: true,
+      wrap: true
+    });
+  }
+});
+</script>
+
+{% endblock %}

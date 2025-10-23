@@ -1,0 +1,180 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Accesorios{% endblock %}
+
+{% block content %}
+
+<style>
+  :root{
+    --safari:#B6A68E;
+    --mocha:#837060;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --rose-tan:#D19C97;
+    --ink:#2c3e50;
+  }
+
+  .category-header{
+    color:var(--mocha);
+    font-family:"Playfair Display",serif;
+    font-weight:800;
+    margin-bottom:1.5rem;
+    padding-top:1rem;
+    border-bottom: 2px solid var(--cobblestone);
+    padding-bottom: .5rem;
+  }
+
+  .product-card{
+    background:#fff;
+    border:1px solid var(--gardenia); 
+    border-radius:12px;
+    overflow:hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration:none;
+    display:block;
+  }
+  .product-card:hover{
+    transform: translateY(-5px);
+    box-shadow:0 8px 16px rgba(0,0,0,.1);
+  }
+  .product-card img{
+    width:100%;
+    height:auto;
+    display:block;
+    aspect-ratio: 4/5; 
+    object-fit: cover;
+  }
+
+  .product-info{
+    padding:1rem;
+    text-align:center;
+  }
+  .product-info h5{
+    color:var(--ink);
+    font-weight:600;
+    font-size:1.1rem;
+    margin-bottom:.2rem;
+  }
+  .product-info p{
+    color:var(--mocha);
+    font-weight:700;
+    margin:0;
+  }
+  
+  /* Botón de Carrito  */
+  .btn-add{
+    background:var(--safari);
+    color:#fff;
+    font-weight:700;
+    border-radius:8px;
+    padding:.4rem .8rem;
+    font-size:.9rem;
+    margin-top:.75rem;
+  }
+  .btn-add:hover{
+    background:var(--mocha);
+    color:#fff;
+  }
+</style>
+
+<section class="container my-5">
+  <h2 class="category-header">NUEVOS ACCESORIOS</h2>
+  <p class="lead text-muted mb-4">
+    Encuentra el complemento perfecto para tu estilo, con materiales sostenibles y diseño de vanguardia.
+  </p>
+
+  <div class="row g-4">
+
+    <div class="col-6 col-md-4 col-lg-3">
+      <a href="#" class="product-card">
+        <img src="{% static 'img/accesorios/carteracafe.jpeg' %}" alt="Cartera Minimalista" class="img-fluid">
+        <div class="product-info">
+          <h5>Cartera Minimalista</h5>
+          <p>€ 49.95</p>
+          <button class="btn btn-add">Añadir</button>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-6 col-md-4 col-lg-3">
+      <a href="#" class="product-card">
+        <img src="{% static 'img/accesorios/lentesnegro.jpeg' %}" alt="Gafas de Sol Clásicas" class="img-fluid">
+        <div class="product-info">
+          <h5>Gafas de Sol Clásicas</h5>
+          <p>€ 25.95</p>
+          <button class="btn btn-add">Añadir</button>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-6 col-md-4 col-lg-3">
+      <a href="#" class="product-card">
+        <img src="{% static 'img/accesorios/pañuelo2.jpeg' %}" alt="Pañuelo Estampado Seda" class="img-fluid">
+        <div class="product-info">
+          <h5>Pañuelo Estampado Seda</h5>
+          <p>€ 15.95</p>
+          <button class="btn btn-add">Añadir</button>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-6 col-md-4 col-lg-3">
+      <a href="#" class="product-card">
+        <img src="{% static 'img/accesorios/collar.jpeg' %}" alt="Collar Dije Geométrico" class="img-fluid">
+        <div class="product-info">
+          <h5>Collar Dije Geométrico</h5>
+          <p>€ 12.95</p>
+          <button class="btn btn-add">Añadir</button>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-6 col-md-4 col-lg-3">
+      <a href="#" class="product-card">
+        <img src="{% static 'img/accesorios/pulseras.jpeg' %}" alt="Set Pulseras Metálicas" class="img-fluid">
+        <div class="product-info">
+          <h5>Set Pulseras Metálicas</h5>
+          <p>€ 9.95</p>
+          <button class="btn btn-add">Añadir</button>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-6 col-md-4 col-lg-3">
+      <a href="#" class="product-card">
+        <img src="{% static 'img/accesorios/cartera2.jpeg' %}" alt="Cartera de Mano Negra" class="img-fluid">
+        <div class="product-info">
+          <h5>Cartera de Mano Negra</h5>
+          <p>€ 35.95</p>
+          <button class="btn btn-add">Añadir</button>
+        </div>
+      </a>
+    </div>
+    
+    <div class="col-6 col-md-4 col-lg-3">
+      <a href="#" class="product-card">
+        <img src="{% static 'img/accesorios/collar1.jpeg' %}" alt="Collar Cadena Eslabones" class="img-fluid">
+        <div class="product-info">
+          <h5>Collar Cadena Eslabones</h5>
+          <p>€ 18.95</p>
+          <button class="btn btn-add">Añadir</button>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-6 col-md-4 col-lg-3">
+      <a href="#" class="product-card">
+        <img src="{% static 'img/accesorios/lentes2.jpeg' %}" alt="Gafas de Sol Oversize" class="img-fluid">
+        <div class="product-info">
+          <h5>Gafas de Sol </h5>
+          <p>€ 29.95</p>
+          <button class="btn btn-add">Añadir</button>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
