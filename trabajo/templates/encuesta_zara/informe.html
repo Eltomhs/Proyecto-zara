@@ -4,165 +4,223 @@
 {% block title %}ZARA — Informe de Encuesta{% endblock %}
 
 {% block content %}
-<section class="container-xxl py-4">
-  <h1 class="h3 mb-3">Zara, Fast Fashion y Sostenibilidad</h1>
+<style>
+  :root{
+    --mocha:#837060; 
+    --tendril:#A9BE70; 
+    --safari:#B6A68E; 
+    --gardenia:#F1E8D9; 
+    --rosetan:#D3A39A;
+    --ink:#1f2328; 
+    --muted:#6b7280;
+    --card-border:1px solid rgba(0,0,0,0.10); 
+    --radius:14px;
+  }
+
+
+  .z-section{ margin-bottom:2rem; }
+  .z-header{
+    background:#fff; border:var(--card-border); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:1.25rem;
+  }
+  .z-sub{ color:var(--muted); font-size:.92rem; }
+  .z-note{ color:var(--muted); font-size:.9rem; }
+
+  /* ——— KPIs ——— */
+  .z-kpi{
+    background:#fff; border:var(--card-border); border-radius:12px;
+    text-align:center; padding:20px;
+  }
+  .z-kpi .label{ font-size:.78rem; letter-spacing:.02em; color:var(--muted); }
+  .z-kpi .value{ font-weight:800; font-size:2rem; color:var(--ink); }
+  @media (max-width:768px){ .z-kpi .value{font-size:1.6rem;} }
+
+  /* ——— Tarjetas de gráfico  ——— */
+  .z-card{
+    border-radius:var(--radius); border:var(--card-border);
+    display:flex; flex-direction:column;
+    min-height: clamp(420px, 48vh, 520px);
+    background:#fff;
+  }
+  .z-head{
+    padding:16px 18px 0 18px;   
+    min-height:72px;            
+  }
+  .z-title{
+    font-size:1.05rem; font-weight:700; color:var(--ink);
+    margin:0 0 .35rem 0;
+  }
+  .z-subtle{ color:var(--muted); font-size:.86rem; margin:0; }
+
+  .z-body{ padding:12px 16px 16px 16px; flex:1; } 
+  .z-actions{ padding:0 16px 14px 16px; margin-top:.25rem; }
+
+  /* Canvas y contenedor */
+  canvas{ display:block; width:100% !important; height:100% !important; }
+  .chart-box{
+    position:relative;
+    height: clamp(260px, 34vh, 320px); 
+  }
+
+  /* Botón */
+  .btn-zara{
+    border-radius:999px; border:var(--card-border); background:#F1E8D9; color:#4b3f38;
+    padding:.48rem 1rem; font-weight:600; text-decoration:none; display:inline-flex; align-items:center;
+  }
+  .btn-zara:hover{ filter:brightness(0.98); text-decoration:none; }
+</style>
+
+<div class="container-xxl py-4">
+
+  <!-- HEADER -->
+  <div class="z-header z-section">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <div class="z-sub">Dashboard de resultados</div>
+        <h1 class="h5 m-0">Zara, Fast Fashion y Sostenibilidad</h1>
+      </div>
+      <div class="chip" style="background:#fff;border:var(--card-border)">
+        Muestra: {{ kpis.total_respuestas|default:"—" }}
+      </div>
+    </div>
+    <div class="z-note mt-2">Use “Ver detalle” en cada tarjeta para abrir su desglose.</div>
+  </div>
 
   <!-- KPIs -->
-  <div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="p-3 border rounded-3 bg-white h-100 text-center">
-        <div class="small text-muted">TOTAL RESPUESTAS</div>
-        <div class="fs-2 fw-bold" id="k_total">—</div>
+  <div class="row g-4 z-section">
+    <div class="col-6 col-md-3"><div class="z-kpi">
+      <div class="label">TOTAL RESPUESTAS</div>
+      <div class="value">{{ kpis.total_respuestas|default:"—" }}</div>
+    </div></div>
+
+    <div class="col-6 col-md-3"><div class="z-kpi">
+      <div class="label">CONOCE FAST FASHION</div>
+      <div class="value">{% if kpis.pct_conoce is not None %}{{ kpis.pct_conoce }}%{% else %}—{% endif %}</div>
+    </div></div>
+
+    <div class="col-6 col-md-3"><div class="z-kpi">
+      <div class="label">ASOCIA ZARA A FAST FASHION</div>
+      <div class="value">{% if kpis.pct_asocia is not None %}{{ kpis.pct_asocia }}%{% else %}—{% endif %}</div>
+    </div></div>
+
+    <div class="col-6 col-md-3"><div class="z-kpi">
+      <div class="label">IMPORTANCIA (PROM.)</div>
+      <div class="value">{% if kpis.promedio_importancia %}{{ kpis.promedio_importancia }}{% else %}—{% endif %}</div>
+    </div></div>
+  </div>
+
+  <!-- GRÁFICOS -->
+  <div class="row g-5 z-section">
+    {% for key, card in charts.items %}
+      <div class="col-12 col-md-6 col-lg-6">
+        <div class="z-card">
+          <div class="z-head">
+            <h3 class="z-title">
+              {% if key == "conoce" %}¿Ha escuchado “Fast Fashion”?{% endif %}
+              {% if key == "asocia" %}¿Asocia a Zara con Fast Fashion?{% endif %}
+              {% if key == "canal" %}Canales de compra{% endif %}
+              {% if key == "factor" %}Factor que más influye{% endif %}
+              {% if key == "likert" %}Importancia de la sostenibilidad (1–5){% endif %}
+              {% if key == "pagar" %}¿Pagaría más si fuera sostenible?{% endif %}
+              {% if key == "info" %}Información de sostenibilidad deseada{% endif %}
+              {% if key == "edad" %}Distribución por edad{% endif %}
+              {% if key == "genero" %}Distribución por género{% endif %}
+            </h3>
+            <p class="z-subtle">
+              {% if key == "canal" %}Tienda física / Online / Marketplace{% endif %}
+              {% if key == "factor" %}Precio, tendencia, calidad, etc.{% endif %}
+              {% if key == "info" %}Etiquetas, huella, materiales…{% endif %}
+              {% if key == "likert" %}Escala Likert{% endif %}
+            </p>
+          </div>
+
+          <!-- Cuerpo -->
+          <div class="z-body">
+            <div class="chart-box">
+              <canvas id="c_{{ key }}"></canvas>
+            </div>
+          </div>
+
+          <div class="z-actions d-flex justify-content-end">
+            <a href="{% url 'zara:chart_detail' key %}" class="btn-zara">Ver detalle</a>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="p-3 border rounded-3 bg-white h-100 text-center">
-        <div class="small text-muted">CONOCE FAST FASHION</div>
-        <div class="fs-2 fw-bold" id="k_conoce">—</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="p-3 border rounded-3 bg-white h-100 text-center">
-        <div class="small text-muted">ASOCIA A ZARA</div>
-        <div class="fs-2 fw-bold" id="k_asocia">—</div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="p-3 border rounded-3 bg-white h-100 text-center">
-        <div class="small text-muted">PROM. IMPORTANCIA (1–5)</div>
-        <div class="fs-2 fw-bold" id="k_prom">—</div>
-      </div>
-    </div>
+    {% endfor %}
   </div>
 
-  <!-- Gráficos -->
-  <div class="row g-3 mb-3">
-    <div class="col-12 col-lg-4"><div class="p-3 border rounded-3 bg-white"><h6>¿Ha escuchado “Fast Fashion”?</h6><div style="height:340px"><canvas id="ch_conoce"></canvas></div></div></div>
-    <div class="col-12 col-lg-4"><div class="p-3 border rounded-3 bg-white"><h6>¿Asocia a Zara con Fast Fashion?</h6><div style="height:340px"><canvas id="ch_asocia"></canvas></div></div></div>
-    <div class="col-12 col-lg-4"><div class="p-3 border rounded-3 bg-white"><h6>¿Dónde suele comprar en Zara?</h6><div style="height:340px"><canvas id="ch_canal"></canvas></div></div></div>
-  </div>
+</div>
 
-  <div class="row g-3 mb-3">
-    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Importancia de la sostenibilidad (1–5)</h6><div style="height:360px"><canvas id="ch_likert"></canvas></div></div></div>
-    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>¿Compraría sostenible si sube el precio?</h6><div style="height:360px"><canvas id="ch_pagar"></canvas></div></div></div>
-  </div>
-
-  <div class="row g-3 mb-3">
-    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Factor que más influye en la compra</h6><div style="height:360px"><canvas id="ch_factor"></canvas></div></div></div>
-    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Información de sostenibilidad deseada</h6><div style="height:360px"><canvas id="ch_info"></canvas></div></div></div>
-  </div>
-
-  <div class="row g-3">
-    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Distribución por edad</h6><div style="height:360px"><canvas id="ch_edad"></canvas></div></div></div>
-    <div class="col-12 col-lg-6"><div class="p-3 border rounded-3 bg-white"><h6>Distribución por género</h6><div style="height:360px"><canvas id="ch_genero"></canvas></div></div></div>
-  </div>
-</section>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+{{ charts|json_script:"charts-data" }}
 
 <script>
-(() => {
   const PALETTE = {
-    mocha:   '#837060',
-    tendril: '#A9BE70',
-    rose:    '#D19C97',
-    safari:  '#B6A68E',
-    garden:  '#F1E8D9',
-    ink:     '#2c3e50'
+    main:["#A9BE70","#B6A68E","#D3A39A","#837060","#F1E8D9"],
+    bars:["#A9BE70","#B6A68E","#D3A39A","#837060","#a8a29e","#94a3b8","#c7d2fe"],
+    grid:"rgba(0,0,0,0.06)", text:"#1f2328"
   };
 
-  if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
-  if (window['chartjs-plugin-annotation']) Chart.register(window['chartjs-plugin-annotation']);
-
-  Chart.defaults.font.family = "'Inter', system-ui, Segoe UI, Roboto, Arial, sans-serif";
-  Chart.defaults.color = PALETTE.ink;
-
-  const baseOpts = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: { duration: 800, easing: 'easeOutQuart' },
-    plugins: { legend: { labels: { usePointStyle: true } }, tooltip: { enabled: true } }
-  };
-
-  const donut = (labels, data, colors) => ({
-    type: 'doughnut',
-    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0 }] },
-    options: { ...baseOpts, cutout: '58%', plugins: { ...baseOpts.plugins, legend: { position: 'bottom' } } }
-  });
-
-  const bars = (labels, data, color) => ({
-    type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: color, borderRadius: 6, maxBarThickness: 48 }] },
-    options: {
-      ...baseOpts,
-      plugins: { ...baseOpts.plugins, legend: { display: false }, datalabels: { color: '#333', anchor: 'end', align: 'end', formatter:v=>v>0?v:'' } },
-      scales: { y: { beginAtZero:true, grid:{ color: '#e9e9e9' } }, x: { grid: { display:false } } }
+  // Filtra NaN/undefined
+  function cleanData(labels, data){
+    const out = [];
+    for (let i=0;i<labels.length;i++){
+      const L = String(labels[i] ?? "").trim().toLowerCase();
+      if (!L || L==="nan" || L==="undefined") continue;
+      out.push({l: labels[i], d: data[i]});
     }
-  });
+    return { labels: out.map(x=>x.l), data: out.map(x=>x.d) };
+  }
 
-  const barsLikert = (labels, data, color, promedio) => ({
-    type: 'bar',
-    data: { labels, datasets: [{ data, backgroundColor: color, borderRadius: 6, maxBarThickness: 48 }] },
-    options: {
-      ...baseOpts,
-      plugins: {
-        ...baseOpts.plugins,
-        legend: { display: false },
-        datalabels: { color: '#333', anchor: 'end', align: 'end', formatter:v=>v>0?v:'' },
-        annotation: promedio ? {
-          annotations: {
-            likertAvg: {
-              type: 'line',
-              xMin: (promedio - 1), xMax: (promedio - 1), scaleID: 'x',
-              borderColor: PALETTE.mocha, borderDash: [6,6], borderWidth: 3,
-              label: { enabled: true, content: `Promedio ${promedio}`, position: 'start', backgroundColor: PALETTE.mocha, color: '#fff', padding: 6 }
+  const charts = JSON.parse(document.getElementById('charts-data').textContent);
+
+  function drawChart(canvasId, cfg){
+    const el = document.getElementById(canvasId);
+    if(!el) return;
+
+    const type = cfg.type || 'bar';
+    let {labels, data} = cleanData(cfg.labels || [], cfg.data || []);
+
+    new Chart(el, {
+      type,
+      data: {
+        labels,
+        datasets: [{
+          label: "",
+          data,
+          backgroundColor: (type==='bar') ? PALETTE.bars : PALETTE.main,
+          borderRadius: (type==='bar') ? 8 : 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,    
+        plugins: {
+          legend: {
+            display: (type==='pie' || type==='doughnut'),
+            position: 'bottom',
+            labels: { color: PALETTE.text }
+          },
+          tooltip: {
+            callbacks: {
+              label: (c) => {
+                const v = c.raw ?? 0;
+                const t = (data||[]).reduce((a,b)=>a+b,0) || 0;
+                const pct = t ? (v*100/t).toFixed(1)+'%' : '';
+                return `${c.label}: ${v}${pct?` (${pct})`:''}`;
+              }
             }
           }
+        },
+        scales: (type==='bar') ? {
+          x: { ticks: { color: PALETTE.text }, grid: { color: PALETTE.grid } },
+          y: { beginAtZero: true, ticks: { color: PALETTE.text }, grid: { color: PALETTE.grid } }
         } : {}
-      },
-      scales: { y: { beginAtZero:true, grid:{ color: '#e9e9e9' } }, x: { grid: { display:false } } }
-    }
-  });
-
-  function fillKpis(kpis){
-    const pct = v => (v == null ? '—' : `${v}%`);
-    document.getElementById('k_total').textContent = kpis.total_respuestas ?? '—';
-    document.getElementById('k_conoce').textContent = pct(kpis.pct_conoce);
-    document.getElementById('k_asocia').textContent = pct(kpis.pct_asocia);
-    document.getElementById('k_prom').textContent   = (kpis.promedio_importancia ?? '—');
-  }
-
-  // Render de charts
-  function renderCharts(charts){
-    new Chart(document.getElementById('ch_conoce'), donut(charts.conoce.labels, charts.conoce.data, [PALETTE.rose, PALETTE.safari]));
-    new Chart(document.getElementById('ch_asocia'), donut(charts.asocia.labels, charts.asocia.data, [PALETTE.mocha, PALETTE.safari]));
-    new Chart(document.getElementById('ch_canal'),  bars(charts.canal.labels,  charts.canal.data,  PALETTE.rose));
-    new Chart(document.getElementById('ch_likert'), barsLikert(charts.likert.labels, charts.likert.data, PALETTE.tendril, charts.likert.promedio));
-    new Chart(document.getElementById('ch_pagar'),  donut(charts.pagar.labels, charts.pagar.data, [PALETTE.tendril, PALETTE.garden, PALETTE.mocha]));
-    new Chart(document.getElementById('ch_factor'), bars(charts.factor.labels, charts.factor.data, PALETTE.mocha));
-    new Chart(document.getElementById('ch_info'),   bars(charts.info.labels,  charts.info.data,  PALETTE.tendril));
-    new Chart(document.getElementById('ch_edad'),   bars(charts.edad.labels,  charts.edad.data,  PALETTE.rose));
-    new Chart(document.getElementById('ch_genero'), donut(charts.genero.labels, charts.genero.data, [PALETTE.safari, PALETTE.rose, PALETTE.garden]));
-  }
-
-  // Carga de datos JSON
-  fetch("{% url 'encuesta_json' %}", { cache: 'no-store' })
-    .then(r => r.json())
-    .then(({kpis, charts}) => {
-      fillKpis(kpis);
-      renderCharts(charts);
-    })
-    .catch(err => {
-      console.error(err);
-      alert('No se pudo cargar /api/encuesta.json');
+      }
     });
-})();
+  }
+
+  Object.keys(charts).forEach(k => drawChart('c_'+k, charts[k]));
 </script>
 {% endblock %}
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
-

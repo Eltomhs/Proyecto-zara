@@ -1,0 +1,436 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Carrito{% endblock %}
+
+{% block content %}
+
+<style>
+  :root{
+    --safari:#B6A68E;
+    --mocha:#837060;
+    --mocha-700:#6f5b4f;
+    --mocha-800:#5d4d42;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --rose-tan:#D19C97;
+    --ink:#2c3e50;
+  }
+
+  .card-elev{border:1px solid var(--gardenia);border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.04);background:#fff;}
+  .cart-item + .cart-item{border-top:1px solid var(--gardenia);}
+  .thumb{width:92px;height:115px;object-fit:cover;border-radius:10px;}
+  .qty-wrap{display:flex;align-items:center;gap:.4rem;}
+  .qty-btn{width:34px;height:34px;padding:0;border-radius:10px;}
+  .qty-input{width:56px;text-align:center;border-radius:10px;}
+  .btn-chip{border-radius:999px;}
+  .summary{position:sticky;top:1rem;}
+  .muted{color:#6c757d;}
+  .price{font-weight:700;color:#111;}
+  .strike{text-decoration:line-through;color:#999;font-weight:500;}
+  .small-note{font-size:.85rem;}
+  @media (max-width:991.98px){ .summary{position:static;} }
+
+  .btn-dark{
+    background:var(--mocha)!important;
+    border-color:var(--mocha)!important;
+    color:#fff!important;
+    border-radius:12px;
+  }
+  .btn-dark:hover{background:var(--mocha-700)!important;border-color:var(--mocha-700)!important;}
+  .btn-dark:active,.btn-dark:focus{
+    background:var(--mocha-800)!important;border-color:var(--mocha-800)!important;
+    box-shadow:0 0 0 .25rem rgba(131,112,96,.25)!important;
+  }
+  .btn-outline-secondary{color:#494949;border-color:var(--cobblestone);}
+  .btn-outline-secondary:hover{background:var(--mocha);border-color:var(--mocha);color:#fff;}
+  .btn-outline-dark{color:var(--mocha);border-color:var(--mocha);}
+  .btn-outline-dark:hover{background:var(--mocha);color:#fff;}
+  .form-control:focus,.form-select:focus{border-color:var(--mocha);box-shadow:0 0 0 .2rem rgba(131,112,96,.15);}
+
+  .nav-pills .nav-link{border-radius:12px;color:#444;font-weight:600;background:#f5f5f5;}
+  .nav-pills .nav-link:hover{background:#ececec;}
+  .nav-pills .nav-link.active{background:var(--mocha);color:#fff;}
+  .nav-pills .nav-link:focus{box-shadow:0 0 0 .2rem rgba(131,112,96,.2);}
+
+  .form-check-input:checked{background-color:var(--mocha);border-color:var(--mocha);}
+  .form-check-input:focus{box-shadow:0 0 0 .2rem rgba(131,112,96,.2);border-color:var(--mocha);}
+
+  @media (max-width:575.98px){
+    #checkoutModal .modal-dialog{margin:0;max-width:none;height:100%;}
+    #checkoutModal .modal-content{height:100%;border-radius:16px 16px 0 0;}
+  }
+</style>
+
+<section class="container-xxl my-4 my-md-5">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h4 m-0" style="font-family:'Playfair Display',serif;">Tu carrito</h1>
+    <button id="btnEmpty" class="btn btn-outline-secondary btn-sm btn-chip">Vaciar carrito</button>
+  </div>
+
+  <div class="row g-4">
+    <!-- Lista -->
+    <div class="col-12 col-lg-8">
+      <div id="cartCard" class="card-elev">
+        <div id="cartList"></div>
+
+        <div id="savedWrap" class="p-3 p-md-4" style="display:none;">
+          <hr class="my-0">
+          <h6 class="mt-3 mb-2">Guardado para después</h6>
+          <div id="savedList" class="vstack gap-3"></div>
+        </div>
+
+        <div id="emptyState" class="p-4 p-md-5 text-center" style="display:none;">
+          <p class="mb-3 muted">Tu carrito está vacío.</p>
+          <a href="{% url 'zara:mujer' %}" class="btn btn-dark btn-chip px-4">Explorar productos</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="col-12 col-lg-4">
+      <div class="card-elev p-3 p-md-4 summary">
+        <h5 class="mb-3">Resumen</h5>
+
+        <div class="mb-3">
+          <label for="promoInput" class="form-label small mb-1">Código de descuento</label>
+          <div class="d-flex gap-2">
+            <input id="promoInput" class="form-control" placeholder="p. ej. ZARA10" />
+            <button id="applyPromo" class="btn btn-outline-secondary">Aplicar</button>
+          </div>
+          <div id="promoMsg" class="small-note mt-1 muted"></div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small mb-1">Método de envío</label>
+          <select id="shippingSelect" class="form-select">
+            <option value="store|0">Retiro en tienda — $0</option>
+            <option value="std|0">Envío estándar — $0 (promoción)</option>
+            <option value="exp|4990">Envío express — $4.990</option>
+          </select>
+          <div class="small-note muted mt-1">Los plazos se calculan en el siguiente paso.</div>
+        </div>
+
+        <div class="d-flex justify-content-between mb-2">
+          <span class="muted">Subtotal</span><span id="txtSubtotal" class="price">$0</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="muted">Descuento</span><span id="txtDiscount" class="text-success">– $0</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="muted">Envío</span><span id="txtShipping">$0</span>
+        </div>
+        <hr class="my-3">
+        <div class="d-flex justify-content-between align-items-baseline mb-1">
+          <span class="fw-semibold">Total</span><span id="txtTotal" class="price h5 mb-0">$0</span>
+        </div>
+
+        <button id="btnCheckout" class="btn btn-dark w-100">Finalizar compra</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Checkout -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true" aria-labelledby="checkoutTitle">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 id="checkoutTitle" class="modal-title">Completa tu compra</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body pt-0">
+        <div class="mb-3 p-3 rounded" style="background:#f8f9fa;">
+          <div class="d-flex justify-content-between">
+            <div>
+              <div class="small muted">Resumen</div>
+              <div class="fw-semibold" id="ckSummaryQty">0 productos</div>
+            </div>
+            <div class="text-end">
+              <div class="small muted">Total</div>
+              <div class="fw-bold" id="ckSummaryTotal">$0</div>
+            </div>
+          </div>
+        </div>
+
+        <ul class="nav nav-pills mb-3" id="checkoutTabs" role="tablist">
+          <li class="nav-item"><button class="nav-link active" id="login-tab" data-bs-toggle="pill" data-bs-target="#login-pane" type="button" role="tab">Iniciar sesión</button></li>
+          <li class="nav-item"><button class="nav-link" id="guest-tab" data-bs-toggle="pill" data-bs-target="#guest-pane" type="button" role="tab">Entrar como invitado</button></li>
+        </ul>
+
+        <div class="tab-content">
+          
+          <!-- Login -->
+          <div class="tab-pane fade show active" id="login-pane" role="tabpanel" aria-labelledby="login-tab">
+            <form id="loginForm" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" required placeholder="tucorreo@dominio.cl">
+                <div class="invalid-feedback">Ingresa un email válido.</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Contraseña</label>
+                <input type="password" class="form-control" required minlength="6" placeholder="••••••••">
+                <div class="invalid-feedback">La contraseña es obligatoria.</div>
+              </div>
+              <div class="form-check mb-3">
+                <input id="terms1" class="form-check-input" type="checkbox" required>
+                <label class="form-check-label small" for="terms1">Acepto los términos y condiciones</label>
+                <div class="invalid-feedback">Debes aceptar los términos.</div>
+              </div>
+              <button class="btn btn-dark w-100">Entrar y continuar</button>
+            </form>
+          </div>
+
+          <!-- Invitado -->
+          <div class="tab-pane fade" id="guest-pane" role="tabpanel" aria-labelledby="guest-tab">
+            <form id="guestForm" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" required placeholder="tucorreo@dominio.cl">
+                <div class="invalid-feedback">Ingresa un email válido.</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Nombre y Apellido</label>
+                <input type="text" class="form-control" required placeholder="Nombre Apellido">
+                <div class="invalid-feedback">Este campo es obligatorio.</div>
+              </div>
+              <div class="form-check mb-3">
+                <input id="terms2" class="form-check-input" type="checkbox" required>
+                <label class="form-check-label small" for="terms2">Acepto los términos y condiciones</label>
+                <div class="invalid-feedback">Debes aceptar los términos.</div>
+              </div>
+              <button class="btn btn-dark w-100">Continuar como invitado</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  const STORAGE_CART='zara_cart', STORAGE_SAVED='zara_saved', STORAGE_PREFS='zara_cart_prefs';
+  const CLP=(n)=>new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n||0);
+
+  const cartList=document.getElementById('cartList');
+  const emptyState=document.getElementById('emptyState');
+  const savedWrap=document.getElementById('savedWrap');
+  const savedList=document.getElementById('savedList');
+  const btnEmpty=document.getElementById('btnEmpty');
+
+  const txtSubtotal=document.getElementById('txtSubtotal');
+  const txtDiscount=document.getElementById('txtDiscount');
+  const txtShipping=document.getElementById('txtShipping');
+  const txtTotal=document.getElementById('txtTotal');
+  const shippingSelect=document.getElementById('shippingSelect');
+
+  const promoInput=document.getElementById('promoInput');
+  const promoMsg=document.getElementById('promoMsg');
+  const applyPromo=document.getElementById('applyPromo');
+
+  const btnCheckout=document.getElementById('btnCheckout');
+  const ckSummaryQty=document.getElementById('ckSummaryQty');
+  const ckSummaryTotal=document.getElementById('ckSummaryTotal');
+
+  const read=(k,def)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(def));}catch{return def;}};
+  const write=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+
+  function getPrefs(){ return read(STORAGE_PREFS,{promo:null,shipping:'std|0'}); }
+  function setPrefs(next){ write(STORAGE_PREFS,Object.assign(getPrefs(),next)); }
+
+  function normalizePromo(code){
+    if(!code) return null;
+    const c=String(code).trim().toUpperCase();
+    if(c==='ZARA10') return { code:c, type:'percent', value:10, desc:'10% de descuento' };
+    if(c==='ENVIOGRATIS') return { code:c, type:'shipfree', value:1, desc:'Envío estándar gratis' };
+    return null;
+  }
+  function calcDiscount(promo, subtotal){
+    if(!promo) return 0;
+    if(promo.type==='percent') return Math.round(subtotal*(promo.value/100));
+    return 0;
+  }
+
+  function render(){
+    const items=read(STORAGE_CART,[]);
+    const saved=read(STORAGE_SAVED,[]);
+    const prefs=getPrefs();
+
+    cartList.innerHTML=''; savedList.innerHTML='';
+    emptyState.style.display=items.length?'none':'';
+    savedWrap.style.display=saved.length?'':'none';
+
+    let subtotal=0, totalQty=0;
+
+    items.forEach((it,idx)=>{
+      const lineTotal=(it.price||0)*(it.qty||1);
+      subtotal+=lineTotal; totalQty+=(it.qty||1);
+
+      const priceTextNumber = parseInt(String(it.priceText||'').replace(/\D/g,''),10);
+      const showStrike = Number.isFinite(priceTextNumber) && priceTextNumber>0 && priceTextNumber !== (it.price||0);
+
+      const row=document.createElement('div');
+      row.className='cart-item p-3 p-md-4';
+      row.innerHTML=`
+        <div class="d-flex gap-3 align-items-start">
+          <img class="thumb" src="${it.img||''}" alt="${(it.title||'').replace(/"/g,'&quot;')}">
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div>
+                <div class="fw-semibold">${it.title||''}</div>
+                <div class="small muted">${[it.color||'', it.size?('Talla '+it.size):''].filter(Boolean).join(' · ')}</div>
+              </div>
+              <div class="text-end">
+                ${showStrike ? `<div class="strike">${it.priceText}</div>` : ``}
+                <div class="price">${CLP(lineTotal)}</div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mt-2 align-items-center">
+              <div class="qty-wrap" role="group" aria-label="Cantidad">
+                <button class="btn btn-outline-secondary qty-btn" data-act="dec" data-idx="${idx}" aria-label="Disminuir">–</button>
+                <input inputmode="numeric" pattern="[0-9]*" class="form-control qty-input" value="${it.qty||1}" data-idx="${idx}">
+                <button class="btn btn-outline-secondary qty-btn" data-act="inc" data-idx="${idx}" aria-label="Aumentar">+</button>
+              </div>
+              <button class="btn btn-outline-secondary btn-sm btn-chip" data-act="save" data-idx="${idx}">Guardar para después</button>
+              <button class="btn btn-outline-dark btn-sm btn-chip" data-act="del" data-idx="${idx}">Eliminar</button>
+            </div>
+          </div>
+        </div>`;
+      cartList.appendChild(row);
+    });
+
+    // Guardados
+    saved.forEach((it,sidx)=>{
+      const row=document.createElement('div');
+      row.className='d-flex justify-content-between align-items-center';
+      row.innerHTML=`
+        <div class="d-flex align-items-center gap-3">
+          <img class="thumb" style="width:60px;height:75px" src="${it.img||''}" alt="${(it.title||'').replace(/"/g,'&quot;')}">
+          <div>
+            <div class="fw-semibold small">${it.title||''}</div>
+            <div class="small muted">${[it.color||'', it.size?('Talla '+it.size):''].filter(Boolean).join(' · ')}</div>
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-dark btn-sm btn-chip" data-sact="move" data-sidx="${sidx}">Mover al carrito</button>
+          <button class="btn btn-outline-secondary btn-sm btn-chip" data-sact="sdel" data-sidx="${sidx}">Eliminar</button>
+        </div>`;
+      savedList.appendChild(row);
+    });
+
+    // Promo
+    const promo = normalizePromo(prefs.promo);
+    promoInput.value = promo?.code || '';
+    promoMsg.textContent = promo ? `Cupón aplicado: ${promo.code} (${promo.desc})` : 'Puedes usar ZARA10 (10%) o ENVIOGRATIS.';
+    const discount = promo ? calcDiscount(promo, subtotal) : 0;
+
+    // Envío
+    if (shippingSelect.value !== (prefs.shipping||'std|0')) shippingSelect.value = (prefs.shipping||'std|0');
+    const shipCost = Number((shippingSelect.value.split('|')[1])||0);
+
+    // Totales
+    txtSubtotal.textContent = CLP(subtotal);
+    txtDiscount.textContent = discount ? `– ${CLP(discount)}` : '– $0';
+    txtShipping.textContent = CLP(shipCost);
+    const total = Math.max(0, subtotal - discount) + shipCost;
+    txtTotal.textContent = CLP(total);
+
+    ckSummaryQty.textContent = `${totalQty} producto${totalQty===1?'':'s'}`;
+    ckSummaryTotal.textContent = CLP(total);
+
+    btnCheckout.disabled = (read(STORAGE_CART, []).length===0);
+    btnEmpty.disabled = (read(STORAGE_CART, []).length===0);
+  }
+
+  cartList.addEventListener('click',(e)=>{
+    const b=e.target.closest('button[data-act]'); if(!b) return;
+    const act=b.dataset.act, idx=+b.dataset.idx;
+    const items=read(STORAGE_CART,[]); if(!items[idx]) return;
+
+    if(act==='inc') items[idx].qty=(items[idx].qty||1)+1;
+    if(act==='dec') items[idx].qty=Math.max(1,(items[idx].qty||1)-1);
+    if(act==='del') items.splice(idx,1);
+    if(act==='save'){ const saved=read(STORAGE_SAVED,[]); const [m]=items.splice(idx,1); if(m){ saved.unshift(m); write(STORAGE_SAVED,saved);} }
+
+    write(STORAGE_CART,items); render(); syncBadge();
+  });
+
+  cartList.addEventListener('change',(e)=>{
+    const inp=e.target.closest('input.qty-input'); if(!inp) return;
+    const idx=+inp.dataset.idx; const val=Math.max(1,parseInt(inp.value,10)||1);
+    const items=read(STORAGE_CART,[]); if(items[idx]){ items[idx].qty=val; write(STORAGE_CART,items); render(); syncBadge(); }
+  });
+
+  savedList.addEventListener('click',(e)=>{
+    const b=e.target.closest('button[data-sact]'); if(!b) return;
+    const sact=b.dataset.sact, sidx=+b.dataset.sidx;
+    const saved=read(STORAGE_SAVED,[]), items=read(STORAGE_CART,[]);
+    if(!saved[sidx]) return;
+
+    if(sact==='move'){ items.unshift(Object.assign({},saved[sidx],{qty:Math.max(1,saved[sidx].qty||1)})); saved.splice(sidx,1); }
+    if(sact==='sdel'){ saved.splice(sidx,1); }
+
+    write(STORAGE_CART,items); write(STORAGE_SAVED,saved); render(); syncBadge();
+  });
+
+  document.getElementById('btnEmpty').addEventListener('click',()=>{
+    write(STORAGE_CART,[]); render(); syncBadge();
+  });
+
+  shippingSelect.addEventListener('change',()=>{
+    setPrefs({shipping:shippingSelect.value}); render();
+  });
+
+  applyPromo.addEventListener('click',()=>{
+    const promo=normalizePromo(promoInput.value);
+    if(!promo){ setPrefs({promo:null}); promoMsg.textContent='Cupón inválido. Usa ZARA10 o ENVIOGRATIS.'; }
+    else{
+      setPrefs({promo:promo.code});
+      promoMsg.textContent=`Cupón aplicado: ${promo.code} (${promo.desc})`;
+      if(promo.code==='ENVIOGRATIS'){ shippingSelect.value='std|0'; setPrefs({shipping:'std|0'}); }
+    }
+    render();
+  });
+
+  // Checkout 
+  btnCheckout.addEventListener('click',()=>{
+    const modal=bootstrap.Modal.getOrCreateInstance(document.getElementById('checkoutModal'));
+    modal.show();
+  });
+
+  function hookForm(id){
+    const form=document.getElementById(id);
+    form.addEventListener('submit',(ev)=>{
+      ev.preventDefault(); ev.stopPropagation();
+      if(!form.checkValidity()){ form.classList.add('was-validated'); return; }
+      bootstrap.Modal.getInstance(document.getElementById('checkoutModal'))?.hide();
+      window.location.href = "{% url 'zara:invitado' %}";
+    });
+  }
+  hookForm('loginForm'); hookForm('guestForm');
+
+  function syncBadge(){
+    const items=read(STORAGE_CART,[]);
+    const total=items.reduce((a,b)=>a+(b.qty||1),0);
+    document.querySelectorAll('#cartCount').forEach(el=>{
+      el.textContent=total; el.classList.toggle('d-none',total===0);
+    });
+  }
+
+  (function init(){
+    const prefs=getPrefs();
+    if(normalizePromo(prefs.promo)?.code==='ENVIOGRATIS'){
+      shippingSelect.value='std|0'; setPrefs({shipping:'std|0'});
+    }
+    render(); syncBadge();
+  })();
+})();
+</script>
+{% endblock %}

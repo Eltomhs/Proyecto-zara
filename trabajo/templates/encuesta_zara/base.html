@@ -8,58 +8,84 @@
 
   <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Materialize CSS -->
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-        integrity="sha512-1hIJmN2xwzX8HkQx6u2kXc6nM6zZ4z4m4GQ2rVqJZl5r7r5G2bWJw9j5vEwJgF3l2oW2m3a2d5kK9qWb1S9b0w=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-  <!-- Iconos de Material Design -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- AOS (animaciones on-scroll) -->
+  <!-- AOS (animaciones) -->
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
-  <!-- Estilos  -->
+  <!-- Estilos propios -->
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
   <link rel="icon" href="{% static 'img/logo.png' %}">
+
+  {% block extra_css %}{% endblock %}
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background-color:#fff; }
+    .navbar .nav-link { color:#212529!important; font-weight:500; }
+    .navbar .nav-link:hover { color:#000!important; }
+    .navbar-brand { padding:0; line-height:1; }
+    .navbar-brand img { height:28px; width:auto; display:block; filter:grayscale(100%); }
+    .nav-cart { display:flex; align-items:center; gap:.3rem; }
+    .nav-cart .material-icons { font-size:18px; line-height:1; }
+    footer { background:#fff; color:#6c757d; }
+
+    /* —— Modal de producto —— */
+    #productoModal .modal-dialog { max-width: 90vw; }
+    #productoModal .modal-content { border:0; border-radius:20px; overflow:hidden; }
+    #productoModal .pm-gallery { background:#f7f7f7; }
+    #productoModal #pmMain { width:100%; height:100%; object-fit:cover; aspect-ratio:3/4; }
+    #productoModal .pm-thumbs img{
+      width:88px; height:112px; object-fit:cover; border-radius:10px;
+      border:1px solid #eaeaea; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;
+    }
+    #productoModal .pm-thumbs img:hover{ transform:translateY(-2px); box-shadow:0 8px 16px rgba(0,0,0,.08); }
+    #productoModal .pm-right{ padding:2.5rem; }
+    @media (min-width: 992px){ #productoModal .pm-right{ padding:3rem; } }
+    #productoModal .pm-title{ font-family:"Playfair Display",serif; }
+    #productoModal .pm-add{ border-radius:14px; padding:.95rem 1rem; font-weight:800; letter-spacing:.5px; }
+    #productoModal .pm-close{ border-radius:14px; }
+    #productoModal .pm-size-btn{ border-radius:12px; min-width:58px; line-height:38px; font-weight:600; }
+    #productoModal .pm-size-btn.active{ background:#222; color:#fff; border-color:#222; }
+  </style>
 </head>
 
-<body class="theme-neutral">
+<body class="theme-neutral bg-white">
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-blend navbar-light navbar-expand-lg py-2">
+<nav class="navbar navbar-light navbar-expand-lg py-2 bg-white border-bottom">
   <div class="container-xxl">
     <!-- Logo -->
-    <a class="navbar-brand" href="/">
-      <img src="{% static 'img/logo.png' %}" alt="ZARA" height="24" style="filter: grayscale(100%);">
+    <a class="navbar-brand" href="{% url 'zara:home' %}">
+      <img src="{% static 'img/logo.png' %}" alt="ZARA">
     </a>
 
-    <!-- Botón -->
+    <!-- Botón  -->
     <button class="navbar-toggler" type="button"
             data-bs-toggle="offcanvas" data-bs-target="#nav-offcanvas"
             aria-controls="nav-offcanvas" aria-label="Abrir menú">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Menú desktop -->
+    <!-- Menú  -->
     <div class="collapse navbar-collapse d-none d-lg-flex">
-      <ul class="navbar-nav ms-auto align-items-center gap-2">
-        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link" href="/mujer/">Mujer</a></li>
-        <li class="nav-item"><a class="nav-link" href="/hombre/">Hombre</a></li>
-        <li class="nav-item"><a class="nav-link" href="/nina/">Niña</a></li>
-        <li class="nav-item"><a class="nav-link" href="/nino/">Niño</a></li>
-        <li class="nav-item"><a class="nav-link" href="/accesorios/">Accesorios</a></li>
-        <li class="nav-item"><a class="nav-link" href="/perfume/">Perfume</a></li>
-        <li class="nav-item"><a class="nav-link" href="/informe/">Estadísticas</a></li>
-        <li class="nav-item"><a class="nav-link" href="/tradein/">Trade-In</a></li>
+      <ul class="navbar-nav ms-auto align-items-center gap-3">
+        <li class="nav-item"><a class="nav-link" href="{% url 'zara:home' %}">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'zara:mujer' %}">Mujer</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'zara:hombre' %}">Hombre</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'zara:nina' %}">Niña</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'zara:nino' %}">Niño</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'zara:accesorios' %}">Accesorios</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'zara:informe_encuesta' %}">Estadísticas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'zara:tradein' %}">Trade-In</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Iniciar sesión</a></li>
-        <li class="nav-item"><a class="btn btn-cta px-3 waves-effect waves-light" href="#">Carrito</a></li>
+        <li class="nav-item">
+          <!-- .js-open-cart -->
+          <a class="nav-link nav-cart js-open-cart" href="{% url 'zara:carrito' %}">
+            <i class="material-icons">shopping_bag</i> <span>Carrito</span>
+          </a>
+        </li>
       </ul>
     </div>
   </div>
@@ -70,26 +96,22 @@
   <div class="offcanvas-header">
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
   </div>
-
   <div class="offcanvas-body">
     <div class="list-group list-group-flush">
-      <a class="list-group-item list-group-item-action" href="/">Inicio</a>
-      <a class="list-group-item list-group-item-action" href="/mujer/">Mujer</a>
-      <a class="list-group-item list-group-item-action" href="/hombre/">Hombre</a>
-      <a class="list-group-item list-group-item-action" href="/nina/">Niña</a>
-      <a class="list-group-item list-group-item-action" href="/nino/">Niño</a>
-      <a class="list-group-item list-group-item-action" href="/accesorios/">Accesorios</a>
-      <a class="list-group-item list-group-item-action" href="/perfume/">Perfume</a>
-      <a class="list-group-item list-group-item-action" href="/informe/">Estadísticas</a>
-      <a class="list-group-item list-group-item-action" href="/tradein/">Trade-In</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'zara:home' %}">Inicio</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'zara:mujer' %}">Mujer</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'zara:hombre' %}">Hombre</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'zara:nina' %}">Niña</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'zara:nino' %}">Niño</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'zara:accesorios' %}">Accesorios</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'zara:informe_encuesta' %}">Estadísticas</a>
+      <a class="list-group-item list-group-item-action" href="{% url 'zara:tradein' %}">Trade-In</a>
       <hr class="my-2">
       <a class="list-group-item list-group-item-action" href="#">Iniciar sesión</a>
-      <a class="list-group-item list-group-item-action" href="#">Carrito</a>
-    </div>
-
-    <!-- Chips KPI -->
-    <div class="mt-3 d-flex flex-wrap gap-2">
-      
+      <a class="list-group-item list-group-item-action d-flex align-items-center gap-2 js-open-cart"
+         href="{% url 'zara:carrito' %}" data-bs-dismiss="offcanvas">
+        <i class="material-icons" style="font-size:18px;">shopping_bag</i> Carrito
+      </a>
     </div>
   </div>
 </div>
@@ -99,25 +121,199 @@
   {% block content %}{% endblock %}
 </main>
 
-<!-- JS DE LIBRERÍAS -->
+<!-- FOOTER -->
+<footer class="text-center py-4 mt-5 border-top">
+  <p class="mb-0 text-muted">&copy; 2025 ZARA · Proyecto académico</p>
+</footer>
+
+<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script> AOS.init({ once:true, duration:700, easing:'ease-out' }); </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% block extra_js %}{% endblock %}
 
-<!-- Materialize JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
-        integrity="sha512-CZ6t0o9m7qS7kqz6o6o8oT6vJ0o3q8VgW2bS6w1Hq9rQmD7mQqH+Zbq9p0g5f5lq7N0WmJtQF0m3Zr2wqf6j0A=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- MODAL DE PRODUCTO  -->
+<div class="modal fade" id="productoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xxl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="row g-0 align-items-stretch">
+        <!-- Imagen -->
+        <div class="col-12 col-lg-7 pm-gallery d-flex flex-column">
+          <img id="pmMain" src="" alt="" class="flex-grow-1">
+          <div class="pm-thumbs d-flex gap-2 p-3 justify-content-center">
+            <img id="pmThumb1" src="" alt="" class="d-none">
+            <img id="pmThumb2" src="" alt="" class="d-none">
+            <img id="pmThumb3" src="" alt="" class="d-none">
+          </div>
+        </div>
+
+        <!-- Información -->
+        <div class="col-12 col-lg-5 pm-right d-flex flex-column justify-content-between">
+          <div>
+            <h1 id="pmTitle" class="h3 fw-bold mb-3 pm-title"></h1>
+            <div id="pmPrice" class="h5 fw-semibold mb-2 text-dark"></div>
+            <div id="pmMeta" class="text-muted mb-4 small"></div>
+            <p id="pmDesc" class="mb-4" style="font-size:1.05rem; line-height:1.5;"></p>
+            <!-- Tallas -->
+            <div id="pmSizesBlock" class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>Selecciona tu talla</strong>
+                <a href="#" class="small text-decoration-none text-muted">Guía de tallas</a>
+              </div>
+              <div id="pmSizes" class="d-flex flex-wrap gap-2 mb-2"></div>
+              <div id="pmSizeError" class="text-danger small d-none">Elige una talla para continuar.</div>
+            </div>
+          </div>
+
+          <div>
+            <button id="pmAdd" class="btn w-100 btn-dark fw-bold text-uppercase pm-add mb-3">
+              Agregar al carro
+            </button>
+            <button type="button" class="btn btn-outline-secondary w-100 pm-close" data-bs-dismiss="modal">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast feedback -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080;">
+  <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">Producto agregado al carro.</div>
+  </div>
+</div>
+
 
 <script>
-  // Inicializa Materialize 
-  document.addEventListener('DOMContentLoaded', function(){
-    M.AutoInit();
+/* Modal de producto + carrito  ===== */
+document.addEventListener('DOMContentLoaded', function(){
+  const modalEl = document.getElementById('productoModal');
+  if (!modalEl) return;
+
+  const pmMain   = document.getElementById('pmMain');
+  const pmTitle  = document.getElementById('pmTitle');
+  const pmPrice  = document.getElementById('pmPrice');
+  const pmMeta   = document.getElementById('pmMeta');
+  const pmDesc   = document.getElementById('pmDesc');
+  const pmSizesB = document.getElementById('pmSizesBlock');
+  const pmSizes  = document.getElementById('pmSizes');
+  const pmAdd    = document.getElementById('pmAdd');
+  const pmErr    = document.getElementById('pmSizeError');
+  const cartToastEl = document.getElementById('cartToast');
+
+  const pmThumb1 = document.getElementById('pmThumb1');
+  const pmThumb2 = document.getElementById('pmThumb2');
+  const pmThumb3 = document.getElementById('pmThumb3');
+
+  let currentProduct = null;
+  let selectedSize = null;
+  let sizesRequired = false;
+
+  const formatCLP = (n) => (new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0})).format(n);
+
+  document.body.addEventListener('click', function(e){
+    const trigger = e.target.closest('.js-product-trigger');
+    if (!trigger) return;
+    e.preventDefault();
+
+    const src   = trigger.hasAttribute('data-title') ? trigger : (trigger.closest('[data-title]') || trigger);
+    const title = src.getAttribute('data-title') || '';
+    const priceRaw = src.getAttribute('data-price') || '';
+    const code  = src.getAttribute('data-code') || '';
+    const color = src.getAttribute('data-color') || '';
+    const desc  = src.getAttribute('data-desc')  || '';
+    const img1  = src.getAttribute('data-img1') || src.querySelector('img')?.src || '';
+    const img2  = src.getAttribute('data-img2') || '';
+    const img3  = src.getAttribute('data-img3') || '';
+    const sizes = (src.getAttribute('data-sizes') || '').split(',').map(s=>s.trim()).filter(Boolean);
+    const sku   = src.getAttribute('data-sku') || code || title;
+
+    let priceNumber = parseInt(String(priceRaw).replace(/\D/g,''),10);
+    const priceText = isNaN(priceNumber) ? priceRaw : formatCLP(priceNumber);
+
+    pmMain.src = img1;
+
+    const setThumb = (el, src) => { if (src) { el.src = src; el.classList.remove('d-none'); } else { el.src=''; el.classList.add('d-none'); } };
+    setThumb(pmThumb1, img1); setThumb(pmThumb2, img2); setThumb(pmThumb3, img3);
+    [pmThumb1, pmThumb2, pmThumb3].forEach(th => th.onclick = () => { if (th.src) pmMain.src = th.src; });
+
+    pmTitle.textContent = title;
+    pmPrice.textContent = priceText;
+    pmMeta.textContent = [color ? `Color: ${color}` : '', code ? `Código ${code}` : ''].filter(Boolean).join(' · ');
+    pmDesc.textContent = desc;
+
+    pmSizes.innerHTML = '';
+    selectedSize = null;
+    pmErr.classList.add('d-none');
+    sizesRequired = sizes.length > 0;
+    pmSizesB.style.display = sizesRequired ? '' : 'none';
+
+    sizes.forEach(size=>{
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn btn-outline-dark pm-size-btn';
+      btn.textContent = size;
+      btn.dataset.size = size;
+      btn.addEventListener('click', ()=>{
+        [...pmSizes.querySelectorAll('button')].forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedSize = size;
+        pmErr.classList.add('d-none');
+      });
+      pmSizes.appendChild(btn);
+    });
+
+    currentProduct = { title, priceNumber, priceText, code, color, img: img1, sizes, sku };
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
   });
 
-</script>
+  pmAdd.addEventListener('click', function(){
+    if (sizesRequired && !selectedSize) { pmErr.classList.remove('d-none'); return; }
 
-{% block scripts %}{% endblock %}
+    const item = {
+      sku: currentProduct.sku,
+      title: currentProduct.title,
+      price: currentProduct.priceNumber || 0,
+      priceText: currentProduct.priceText,
+      size: sizesRequired ? (selectedSize || '') : '',
+      color: currentProduct.color || '',
+      img: currentProduct.img,
+      qty: 1,
+      addedAt: Date.now()
+    };
+
+    const key = 'zara_cart';
+    const cart = JSON.parse(localStorage.getItem(key) || '[]');
+    const i = cart.findIndex(x => x.sku===item.sku && x.size===item.size);
+    if (i>=0) cart[i].qty += 1; else cart.push(item);
+    localStorage.setItem(key, JSON.stringify(cart));
+
+    if (cartToastEl && window.bootstrap?.Toast) { new bootstrap.Toast(cartToastEl, { delay: 1500 }).show(); }
+  });
+});
+
+document.addEventListener('click', function(e){
+  const link = e.target.closest('a.js-open-cart');
+  if (!link) return;
+
+  e.preventDefault();
+  const href = link.getAttribute('href');
+
+  const ocEl = document.getElementById('nav-offcanvas');
+  const isOpen = ocEl && ocEl.classList.contains('show');
+
+  if (isOpen && window.bootstrap?.Offcanvas) {
+    const oc = bootstrap.Offcanvas.getInstance(ocEl) || new bootstrap.Offcanvas(ocEl);
+    oc.hide();
+    setTimeout(() => { window.location.assign(href); }, 220);
+  } else {
+    window.location.assign(href);
+  }
+});
+</script>
 </body>
 </html>

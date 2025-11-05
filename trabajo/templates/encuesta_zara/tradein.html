@@ -34,7 +34,6 @@
     box-shadow:0 3px 8px rgba(0,0,0,.12);
   }
 
-  /* Centro */
   .unified-card{
     background:#fff;
     border:1px solid var(--cobblestone);
@@ -42,9 +41,11 @@
     padding:1.5rem;
     box-shadow:0 6px 14px rgba(0,0,0,.06);
   }
+
+  /* Grid dos columnas */
   .unified-grid{
     display:grid;
-    grid-template-columns:1fr 1fr;     
+    grid-template-columns:1fr 1fr;
     gap:1.25rem;
     align-items:start;
     position:relative;
@@ -61,18 +62,55 @@
     .unified-grid::before{ display:none; }
   }
 
+  /* Tipografías de secciones */
   .unified-card h4{
     color:var(--mocha);
     font-family:"Playfair Display",serif;
     font-weight:800;
     margin-bottom:.8rem;
   }
-  .form-label{ color:var(--mocha); font-weight:600; }
-  .form-control,.form-select{
-    border-radius:10px;
-    border:1px solid var(--cobblestone);
+
+  /* Fila campos idénticos */
+  .tradein-row{
+    display:grid;
+    grid-template-columns:1.2fr .9fr .9fr;
+    gap:1rem;
+    margin-bottom:1rem;
+  }
+  @media (max-width:768px){
+    .tradein-row{ grid-template-columns:1fr; }
   }
 
+  /* Labels e inputs */
+  .form-label{
+    display:block;
+    color:var(--mocha);
+    font-weight:600;
+    line-height:1.2;
+    margin-bottom:.35rem;
+    white-space:nowrap;
+  }
+  .form-label .req{
+    color:#D9534F;
+    font-weight:700;
+    margin-left:.2rem;
+  }
+  .form-control,
+  .form-select{
+    border-radius:10px;
+    border:1px solid var(--cobblestone);
+    height:46px;
+    padding:.45rem .75rem;
+    font-size:.95rem;
+  }
+  .form-select{
+    padding-right:2.25rem;
+    background-position:right .75rem center;
+    background-repeat:no-repeat;
+  }
+  textarea.form-control{ height:auto; }
+
+  /* Botones */
   .btn-eval{
     background:var(--tendril);
     color:#fff;
@@ -89,10 +127,10 @@
     padding:.55rem 1.25rem;
   }
 
-  /* Cupón */
+  /* Panel de cupón/estado */
   .coupon-panel{
-    background:var(--gardenia);        
-    color:var(--mocha);                
+    background:var(--gardenia);
+    color:var(--mocha);
     border-radius:14px;
     padding:1rem 1.2rem;
     box-shadow: inset 0 0 0 2px var(--safari);
@@ -104,14 +142,14 @@
   }
   .coupon-meta{ color:rgba(50,40,30,.8); font-size:.92rem; }
 
-  /* Descuento */
+  /* descuento */
   .badge-discount{
     display:inline-block;
     padding:.35rem .85rem;
     border-radius:12px;
     font-weight:800;
     font-size:1.2rem;
-    background:var(--rose-tan); 
+    background:var(--rose-tan);
     color:#fff;
     margin-left:.35rem;
   }
@@ -143,19 +181,21 @@
 <section class="unified-card container my-4">
   <form id="tradeinForm" class="unified-grid">
 
+    <!-- Columna izquierda -->
     <div>
       <h4>1. Pre-evaluación online</h4>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label">Nombre de la prenda (*)</label>
+
+      <!-- Fila campos idénticos -->
+      <div class="tradein-row">
+        <div>
+          <label class="form-label">Nombre de la prenda<span class="req">*</span></label>
           <input id="prdName" type="text" class="form-control" placeholder="Abrigo paño studio" required>
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label">Categoría (*)</label>
+        <div>
+          <label class="form-label">Categoría<span class="req">*</span></label>
           <select id="prdCat" class="form-select" required>
             <option value="">Elegir...</option>
-
             <optgroup label="Ropa">
               <option>Abrigos</option>
               <option>Chaquetas</option>
@@ -169,7 +209,6 @@
               <option>Vestidos</option>
               <option>Monos / Enteritos</option>
             </optgroup>
-
             <optgroup label="Calzado">
               <option>Zapatillas</option>
               <option>Botas</option>
@@ -177,7 +216,6 @@
               <option>Sandalias</option>
               <option>Tacones</option>
             </optgroup>
-
             <optgroup label="Accesorios">
               <option>Bolsos</option>
               <option>Carteras</option>
@@ -187,7 +225,6 @@
               <option>Gafas</option>
               <option>Joyería</option>
             </optgroup>
-
             <optgroup label="Otros">
               <option>Deportivo / Athleisure</option>
               <option>Lencería / Ropa interior</option>
@@ -198,8 +235,8 @@
           </select>
         </div>
 
-        <div class="col-md-3">
-          <label class="form-label">Estado estimado (*)</label>
+        <div>
+          <label class="form-label">Estado estimado<span class="req">*</span></label>
           <select id="estado" class="form-select" required>
             <option value="">Elegir...</option>
             <option value="A">A · Excelente (30%)</option>
@@ -207,12 +244,13 @@
             <option value="C">C · Regular (10%)</option>
           </select>
         </div>
+      </div>
 
+      <div class="row g-3 mt-1">
         <div class="col-12">
-          <label class="form-label">Foto de la prenda (requerida para validación)</label>
+          <label class="form-label">Foto de la prenda (requerida para validación)<span class="req">*</span></label>
           <input type="file" id="prdPhoto" class="form-control" accept="image/*" required>
         </div>
-        
         <div class="col-12">
           <label class="form-label">Notas (Talla, año, detalles...)</label>
           <textarea id="prdNotes" class="form-control" rows="2" placeholder="Talla, año, detalles..."></textarea>
@@ -222,22 +260,21 @@
       <h4 class="mt-4">2. Datos de retiro</h4>
       <div class="row g-3">
         <div class="col-md-8">
-          <label class="form-label">Dirección de recogida (*)</label>
+          <label class="form-label">Dirección de recogida<span class="req">*</span></label>
           <input id="address" type="text" class="form-control" placeholder="Calle, número, comuna..." required>
         </div>
         <div class="col-md-4">
-          <label class="form-label">Email (*)</label>
+          <label class="form-label">Email<span class="req">*</span></label>
           <input id="email" type="email" class="form-control" placeholder="tucorreo@ejemplo.com" required>
         </div>
-        
         <div class="col-12 d-flex justify-content-end pt-3">
           <button type="submit" class="btn btn-eval me-2">Evaluar y registrar</button>
           <button type="reset" class="btn btn-clean">Limpiar</button>
         </div>
       </div>
-
     </div>
 
+    <!-- Columna derecha -->
     <div>
       <h4>3. Código de registro y pasos</h4>
       <div class="coupon-panel">
@@ -258,7 +295,6 @@
           <li>Tras la inspección física en nuestro centro, <strong>recibirás el cupón final</strong> por email.</li>
         </ol>
       </div>
-
     </div>
 
   </form>
@@ -281,18 +317,18 @@
   const $ = s => document.querySelector(s);
   const $form = $('#tradeinForm');
   const pctMap = {A:30, B:20, C:10};
-  
+
   const makeCode = () => 'ZT-' + Math.random().toString(36).slice(2,9).toUpperCase();
   const badge = pct => `<span class="badge-discount">${pct}% OFF</span>`;
 
   $form.addEventListener('submit', (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     const estado = ($('#estado')?.value || '').toUpperCase();
     const pct = pctMap[estado];
     const email = ($('#email')?.value || '').trim();
     const address = ($('#address')?.value || '').trim();
-    const photo = $('#prdPhoto').files.length; 
+    const photo = $('#prdPhoto').files.length;
 
     const title = $('#resultTitle');
     const text  = $('#resultText');
@@ -302,10 +338,9 @@
       text.innerHTML = 'Debes completar todos los campos obligatorios (*) y subir una foto para registrar la prenda.';
       return;
     }
-    
-    // Código
+
     const code = makeCode();
-    
+
     title.innerHTML = `Prenda registrada: <strong>${code}</strong>`;
     text.innerHTML = `Tu estimación es <strong>${badge(pct)}</strong>.<br>
                       Hemos enviado el Código de registro a <strong>${email}</strong> para iniciar la validación de la foto y la recogida a domicilio en <strong>${address}</strong>.`;
@@ -318,9 +353,8 @@
   });
 
   $('#tradeinForm button[type="reset"]')?.addEventListener('click', () => {
-    $('#resultTitle').textContent = '✨ Pendiente de registro';
+    $('#resultTitle').textContent = 'Pendiente de registro';
     $('#resultText').innerHTML = 'Completa el formulario y presiona <strong>Evaluar y registrar</strong> para obtener tu código y programar el retiro.';
-    
     $form.querySelectorAll('input, select, textarea, button').forEach(el => {
       el.disabled = false;
     });

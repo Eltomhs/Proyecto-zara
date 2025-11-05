@@ -1,0 +1,270 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Mujer{% endblock %}
+
+{% block content %}
+<style>
+  :root{
+    --safari:#B6A68E;
+    --mocha:#837060;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --rose-tan:#D19C97;
+    --ink:#2c3e50;
+  }
+
+  .category-header{
+    color:var(--rose-tan);
+    font-family:"Playfair Display",serif;
+    font-weight:800;
+    margin-bottom:1.75rem;
+    padding-top:1rem;
+    border-bottom:2px solid var(--cobblestone);
+    padding-bottom:.6rem;
+  }
+
+  .product-col{ display:flex; }
+  .product-card{
+    border:1px solid var(--gardenia);
+    border-radius:14px;
+    overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease;
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+    width:100%;
+  }
+  .product-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 20px rgba(0,0,0,.08);
+  }
+
+  .product-media{
+    width:100%;
+    aspect-ratio: 4 / 5;
+    background:#f7f7f7;
+  }
+  .product-media img{
+    width:100%; height:100%;
+    object-fit:cover; object-position:center;
+    display:block;
+  }
+
+  .product-info{
+    padding:1rem 1rem 1.2rem;
+    text-align:center;
+  }
+  .product-title{
+    color:var(--ink);
+    font-weight:700;
+    font-size:1.05rem;
+    margin:0 0 .25rem 0;
+  }
+  .product-price{
+    color:var(--mocha);
+    font-weight:700;
+    margin:0;
+  }
+
+  .btn-add{
+    background:var(--rose-tan);
+    color:#fff;
+    font-weight:700;
+    border:none;
+    border-radius:12px;
+    padding:.5rem 1rem;
+    font-size:.95rem;
+    margin-top:.7rem;
+    transition:filter .2s ease, transform .2s ease;
+  }
+  .btn-add:hover{ filter:brightness(.95); transform:translateY(-1px); }
+</style>
+
+<section class="container my-5">
+  <h2 class="category-header">COLECCIÓN MUJER</h2>
+  <p class="lead text-muted mb-4">
+    Diseños atemporales y detalles femeninos que combinan ligereza, comodidad y elegancia natural.
+  </p>
+
+  <div class="row g-4">
+
+    <!-- Conjunto formal gris -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/mujer/conjuntoformalgris.jpeg' %}" alt="Conjunto formal gris">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Conjunto formal gris</h5>
+          <p class="product-price">$54.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="CONJUNTO FORMAL GRIS"
+            data-price="54990"
+            data-code="2102/115/500"
+            data-color="GRIS"
+            data-desc="Blazer entallado y pantalón recto en tejido sastre."
+            data-img1="{% static 'img/mujer/conjuntoformalgris.jpeg' %}"
+            data-sku="MUJ-FORMAL-GRIS"
+            data-sizes="XS,S,M,L">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conjunto sastre plomo -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/mujer/conjuntosastreplomo.jpeg' %}" alt="Conjunto sastre plomo">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Conjunto sastre plomo</h5>
+          <p class="product-price">$59.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="CONJUNTO SASTRE PLOMO"
+            data-price="59990"
+            data-code="2102/120/520"
+            data-color="PLOMO"
+            data-desc="Traje sastre con corte moderno, ideal para oficina."
+            data-img1="{% static 'img/mujer/conjuntosastreplomo.jpeg' %}"
+            data-sku="MUJ-SASTRE-PLOMO"
+            data-sizes="XS,S,M,L,XL">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conjunto verano -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/mujer/conjuntoverano.jpeg' %}" alt="Conjunto verano">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Conjunto verano</h5>
+          <p class="product-price">$39.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="CONJUNTO VERANO"
+            data-price="39990"
+            data-code="2102/220/310"
+            data-color="CREMA"
+            data-desc="Top liviano y short con detalle de pasamanería."
+            data-img1="{% static 'img/mujer/conjuntoverano.jpeg' %}"
+            data-sku="MUJ-VERANO"
+            data-sizes="XS,S,M,L">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vestido rojo -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/mujer/vestidorojo.jpeg' %}" alt="Vestido rojo">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Vestido rojo</h5>
+          <p class="product-price">$34.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="VESTIDO ROJO"
+            data-price="34990"
+            data-code="3005/410/600"
+            data-color="ROJO"
+            data-desc="Vestido midi fluido con escote suave y caída liviana."
+            data-img1="{% static 'img/mujer/vestidorojo.jpeg' %}"
+            data-sku="MUJ-VEST-ROJO"
+            data-sizes="XS,S,M,L">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Polera negra básica -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/mujer/poleranegra.jpeg' %}" alt="Polera negra básica">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Polera negra básica</h5>
+          <p class="product-price">$19.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="POLERA NEGRA BÁSICA"
+            data-price="19990"
+            data-code="3001/100/001"
+            data-color="NEGRO"
+            data-desc="Algodón suave, cuello redondo y fit cómodo."
+            data-img1="{% static 'img/mujer/poleranegra.jpeg' %}"
+            data-sku="MUJ-POL-NEGRA"
+            data-sizes="XS,S,M,L,XL">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Short denim -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/mujer/shortjeans.jpeg' %}" alt="Short denim">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Short denim</h5>
+          <p class="product-price">$29.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="SHORT DENIM"
+            data-price="29990"
+            data-code="2101/330/100"
+            data-color="AZUL CLARO"
+            data-desc="Denim suave con ruedo deshilachado."
+            data-img1="{% static 'img/mujer/shortjeans.jpeg' %}"
+            data-sku="MUJ-SHORT-DENIM"
+            data-sizes="XS,S,M,L,XL">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top gris canalé -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/mujer/topgris.jpeg' %}" alt="Top gris canalé">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Top gris canalé</h5>
+          <p class="product-price">$22.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="TOP GRIS CANALÉ"
+            data-price="22990"
+            data-code="2102/440/080"
+            data-color="GRIS"
+            data-desc="Tejido elástico con textura canalé."
+            data-img1="{% static 'img/mujer/topgris.jpeg' %}"
+            data-sku="MUJ-TOP-GRIS"
+            data-sizes="XS,S,M,L,XL">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conjunto gris -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/mujer/conjunto.jpeg' %}" alt="Conjunto gris">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Conjunto gris</h5>
+          <p class="product-price">$45.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="CONJUNTO GRIS"
+            data-price="45990"
+            data-code="2102/500/230"
+            data-color="GRIS CLARO"
+            data-desc="Dos piezas en tejido suave de caída cómoda."
+            data-img1="{% static 'img/mujer/conjunto.jpeg' %}"
+            data-sku="MUJ-CONJ-GRIS"
+            data-sizes="XS,S,M,L">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

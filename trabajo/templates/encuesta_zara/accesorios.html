@@ -4,177 +4,204 @@
 {% block title %}ZARA · Accesorios{% endblock %}
 
 {% block content %}
-
 <style>
   :root{
-    --safari:#B6A68E;
-    --mocha:#837060;
+    --safari:#B6A68E; 
+    --mocha:#837060; 
     --cobblestone:#A89C94;
-    --gardenia:#F1E8D9;
-    --rose-tan:#D19C97;
+    --gardenia:#F1E8D9; 
+    --rose-tan:#D19C97; 
     --ink:#2c3e50;
   }
+
+  body { background:#fff; }
 
   .category-header{
     color:var(--mocha);
     font-family:"Playfair Display",serif;
-    font-weight:800;
-    margin-bottom:1.5rem;
-    padding-top:1rem;
-    border-bottom: 2px solid var(--cobblestone);
-    padding-bottom: .5rem;
+    font-weight:800; font-size:2rem; text-align:center;
+    margin-bottom:2rem; padding-top:1rem;
+    border-bottom:3px solid var(--cobblestone); padding-bottom:.75rem;
+  }
+
+  .product-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:1.5rem;
   }
 
   .product-card{
     background:#fff;
-    border:1px solid var(--gardenia); 
+    border:1px solid var(--gardenia);
     border-radius:12px;
     overflow:hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-decoration:none;
-    display:block;
+    transition:transform .25s ease, box-shadow .25s ease;
+    text-decoration:none; height:100%; display:block;
   }
   .product-card:hover{
-    transform: translateY(-5px);
-    box-shadow:0 8px 16px rgba(0,0,0,.1);
-  }
-  .product-card img{
-    width:100%;
-    height:auto;
-    display:block;
-    aspect-ratio: 4/5; 
-    object-fit: cover;
+    transform:translateY(-3px);
+    box-shadow:0 10px 20px rgba(0,0,0,.08);
   }
 
-  .product-info{
-    padding:1rem;
-    text-align:center;
+  .product-card img{
+    width:100%;
+    aspect-ratio:3/4;          
+    object-fit:cover;
+    object-position:center;
+    display:block;
   }
+
+  .product-info{ padding:.9rem .9rem 1.1rem; text-align:center; }
   .product-info h5{
-    color:var(--ink);
-    font-weight:600;
-    font-size:1.1rem;
-    margin-bottom:.2rem;
+    color:var(--ink); font-family:"Playfair Display",serif;
+    font-weight:700; font-size:1.05rem; margin-bottom:.35rem;
   }
-  .product-info p{
-    color:var(--mocha);
-    font-weight:700;
-    margin:0;
-  }
-  
-  /* Botón de Carrito  */
+  .product-info p{ color:var(--mocha); font-weight:600; margin-bottom:.6rem; }
+
   .btn-add{
-    background:var(--safari);
-    color:#fff;
-    font-weight:700;
-    border-radius:8px;
-    padding:.4rem .8rem;
-    font-size:.9rem;
-    margin-top:.75rem;
+    background:var(--safari); color:#fff; font-weight:700;
+    border-radius:10px; border:none; padding:.5rem 1rem; font-size:.9rem;
+    letter-spacing:.3px; transition:all .2s ease;
   }
-  .btn-add:hover{
-    background:var(--mocha);
-    color:#fff;
-  }
+  .btn-add:hover{ background:var(--mocha); transform:translateY(-1px); }
 </style>
 
 <section class="container my-5">
   <h2 class="category-header">NUEVOS ACCESORIOS</h2>
-  <p class="lead text-muted mb-4">
+  <p class="lead text-center text-muted mb-5">
     Encuentra el complemento perfecto para tu estilo, con materiales sostenibles y diseño de vanguardia.
   </p>
 
-  <div class="row g-4">
+  <div class="product-grid">
 
-    <div class="col-6 col-md-4 col-lg-3">
-      <a href="#" class="product-card">
-        <img src="{% static 'img/accesorios/carteracafe.jpeg' %}" alt="Cartera Minimalista" class="img-fluid">
-        <div class="product-info">
-          <h5>Cartera Minimalista</h5>
-          <p>€ 49.95</p>
-          <button class="btn btn-add">Añadir</button>
-        </div>
-      </a>
+    <!-- Cartera  -->
+    <div class="product-card text-center">
+      <img src="{% static 'img/accesorios/carteracafe.jpeg' %}" alt="Cartera Minimalista">
+      <div class="product-info">
+        <h5>Cartera Minimalista</h5>
+        <p>$49.990 CLP</p>
+        <button class="btn btn-add js-product-trigger"
+          data-title="Cartera Minimalista" data-price="49990" data-code="ACC-001"
+          data-color="Café"
+          data-desc="Bolso de hombro confeccionado en piel sintética texturizada con acabado mate."
+          data-img1="{% static 'img/accesorios/carteracafe.jpeg' %}" data-sizes="">
+          Añadir
+        </button>
+      </div>
     </div>
 
-    <div class="col-6 col-md-4 col-lg-3">
-      <a href="#" class="product-card">
-        <img src="{% static 'img/accesorios/lentesnegro.jpeg' %}" alt="Gafas de Sol Clásicas" class="img-fluid">
-        <div class="product-info">
-          <h5>Gafas de Sol Clásicas</h5>
-          <p>€ 25.95</p>
-          <button class="btn btn-add">Añadir</button>
-        </div>
-      </a>
+    <!-- Gafas de Sol -->
+    <div class="product-card text-center">
+      <img src="{% static 'img/accesorios/lentesnegro.jpeg' %}" alt="Gafas de Sol Clásicas">
+      <div class="product-info">
+        <h5>Gafas de Sol Clásicas</h5>
+        <p>$25.990 CLP</p>
+        <button class="btn btn-add js-product-trigger"
+          data-title="Gafas de Sol Clásicas" data-price="25990" data-code="ACC-002"
+          data-color="Negro"
+          data-desc="Montura cuadrada con protección UV400 y acabado brillante de inspiración vintage."
+          data-img1="{% static 'img/accesorios/lentesnegro.jpeg' %}" data-sizes="">
+          Añadir
+        </button>
+      </div>
     </div>
 
-    <div class="col-6 col-md-4 col-lg-3">
-      <a href="#" class="product-card">
-        <img src="{% static 'img/accesorios/pañuelo2.jpeg' %}" alt="Pañuelo Estampado Seda" class="img-fluid">
-        <div class="product-info">
-          <h5>Pañuelo Estampado Seda</h5>
-          <p>€ 15.95</p>
-          <button class="btn btn-add">Añadir</button>
-        </div>
-      </a>
+    <!-- Pañuelo -->
+    <div class="product-card text-center">
+      <img src="{% static 'img/accesorios/panuelo2.jpeg' %}" alt="Pañuelo Estampado Seda">
+      <div class="product-info">
+        <h5>Pañuelo Estampado Seda</h5>
+        <p>$15.990 CLP</p>
+        <button class="btn btn-add js-product-trigger"
+          data-title="Pañuelo Estampado Seda" data-price="15990" data-code="ACC-003"
+          data-color="Multicolor"
+          data-desc="Pañuelo de seda suave con estampado abstracto y bordes finamente cosidos."
+          data-img1="{% static 'img/accesorios/pañuelo2.jpeg' %}" data-sizes="">
+          Añadir
+        </button>
+      </div>
     </div>
 
-    <div class="col-6 col-md-4 col-lg-3">
-      <a href="#" class="product-card">
-        <img src="{% static 'img/accesorios/collar.jpeg' %}" alt="Collar Dije Geométrico" class="img-fluid">
-        <div class="product-info">
-          <h5>Collar Dije Geométrico</h5>
-          <p>€ 12.95</p>
-          <button class="btn btn-add">Añadir</button>
-        </div>
-      </a>
+    <!-- Collar  -->
+    <div class="product-card text-center">
+      <img src="{% static 'img/accesorios/collar.jpeg' %}" alt="Collar Dije Geométrico">
+      <div class="product-info">
+        <h5>Collar Dije Geométrico</h5>
+        <p>$12.990 CLP</p>
+        <button class="btn btn-add js-product-trigger"
+          data-title="Collar Dije Geométrico" data-price="12990" data-code="ACC-004"
+          data-color="Dorado"
+          data-desc="Cadena fina con dije metálico geométrico. Cierre ajustable al cuello."
+          data-img1="{% static 'img/accesorios/collar.jpeg' %}" data-sizes="">
+          Añadir
+        </button>
+      </div>
     </div>
 
-    <div class="col-6 col-md-4 col-lg-3">
-      <a href="#" class="product-card">
-        <img src="{% static 'img/accesorios/pulseras.jpeg' %}" alt="Set Pulseras Metálicas" class="img-fluid">
-        <div class="product-info">
-          <h5>Set Pulseras Metálicas</h5>
-          <p>€ 9.95</p>
-          <button class="btn btn-add">Añadir</button>
-        </div>
-      </a>
+    <!-- Pulseras  -->
+    <div class="product-card text-center">
+      <img src="{% static 'img/accesorios/pulseras.jpeg' %}" alt="Set Pulseras Metálicas">
+      <div class="product-info">
+        <h5>Set Pulseras Metálicas</h5>
+        <p>$9.990 CLP</p>
+        <button class="btn btn-add js-product-trigger"
+          data-title="Set Pulseras Metálicas" data-price="9990" data-code="ACC-005"
+          data-color="Dorado"
+          data-desc="Conjunto de tres pulseras metálicas con acabado brillante y diseño minimalista."
+          data-img1="{% static 'img/accesorios/pulseras.jpeg' %}" data-sizes="">
+          Añadir
+        </button>
+      </div>
     </div>
 
-    <div class="col-6 col-md-4 col-lg-3">
-      <a href="#" class="product-card">
-        <img src="{% static 'img/accesorios/cartera2.jpeg' %}" alt="Cartera de Mano Negra" class="img-fluid">
-        <div class="product-info">
-          <h5>Cartera de Mano Negra</h5>
-          <p>€ 35.95</p>
-          <button class="btn btn-add">Añadir</button>
-        </div>
-      </a>
-    </div>
-    
-    <div class="col-6 col-md-4 col-lg-3">
-      <a href="#" class="product-card">
-        <img src="{% static 'img/accesorios/collar1.jpeg' %}" alt="Collar Cadena Eslabones" class="img-fluid">
-        <div class="product-info">
-          <h5>Collar Cadena Eslabones</h5>
-          <p>€ 18.95</p>
-          <button class="btn btn-add">Añadir</button>
-        </div>
-      </a>
+    <!-- Cartera -->
+    <div class="product-card text-center">
+      <img src="{% static 'img/accesorios/cartera2.jpeg' %}" alt="Cartera de Mano Negra">
+      <div class="product-info">
+        <h5>Cartera de Mano Negra</h5>
+        <p>$35.990 CLP</p>
+        <button class="btn btn-add js-product-trigger"
+          data-title="Cartera de Mano Negra" data-price="35990" data-code="ACC-006"
+          data-color="Negro"
+          data-desc="Bolso pequeño de mano con textura tipo piel y correa desmontable."
+          data-img1="{% static 'img/accesorios/cartera2.jpeg' %}" data-sizes="">
+          Añadir
+        </button>
+      </div>
     </div>
 
-    <div class="col-6 col-md-4 col-lg-3">
-      <a href="#" class="product-card">
-        <img src="{% static 'img/accesorios/lentes2.jpeg' %}" alt="Gafas de Sol Oversize" class="img-fluid">
-        <div class="product-info">
-          <h5>Gafas de Sol </h5>
-          <p>€ 29.95</p>
-          <button class="btn btn-add">Añadir</button>
-        </div>
-      </a>
+    <!-- Collar  -->
+    <div class="product-card text-center">
+      <img src="{% static 'img/accesorios/collar1.jpeg' %}" alt="Collar Cadena Eslabones">
+      <div class="product-info">
+        <h5>Collar Cadena Eslabones</h5>
+        <p>$18.990 CLP</p>
+        <button class="btn btn-add js-product-trigger"
+          data-title="Collar Cadena Eslabones" data-price="18990" data-code="ACC-007"
+          data-color="Dorado"
+          data-desc="Cadena gruesa de eslabones metálicos con cierre de mosquetón."
+          data-img1="{% static 'img/accesorios/collar1.jpeg' %}" data-sizes="">
+          Añadir
+        </button>
+      </div>
+    </div>
+
+    <!-- Gafas de Sol  -->
+    <div class="product-card text-center">
+      <img src="{% static 'img/accesorios/lentes2.jpeg' %}" alt="Gafas de Sol Oversize">
+      <div class="product-info">
+        <h5>Gafas de Sol Oversize</h5>
+        <p>$29.990 CLP</p>
+        <button class="btn btn-add js-product-trigger"
+          data-title="Gafas de Sol Oversize" data-price="29990" data-code="ACC-008"
+          data-color="Negro"
+          data-desc="Gafas oversize con montura ancha de acetato y cristales polarizados."
+          data-img1="{% static 'img/accesorios/lentes2.jpeg' %}" data-sizes="">
+          Añadir
+        </button>
+      </div>
     </div>
 
   </div>
 </section>
-
 {% endblock %}

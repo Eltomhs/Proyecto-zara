@@ -1,52 +1,200 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ropa de Hombre - Mi Tienda</title>
-    </head>
-<body>
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
 
-    <header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Inicio</a></li> 
-                <li><a href="mujer.html">Mujer</a></li>
-            </ul>
-        </nav>
-        <h1>Colección de Ropa para Hombre</h1>
-    </header>
+{% block title %}ZARA · Hombre{% endblock %}
 
-    <main>
-        <section id="productos">
-            <h2>Nuestras Categorías</h2>
+{% block content %}
+<style>
+  :root{
+    --safari:#B6A68E;
+    --mocha:#837060;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --ink:#2c3e50;
+  }
 
-            <article class="categoria">
-                <h3>Camisetas y Poleras</h3>
-                <p>Descubre nuestra variedad de camisetas de algodón y poleras con estampados exclusivos.</p>
-                </article>
+  .category-header{
+    color:var(--mocha);
+    font-family:"Playfair Display",serif;
+    font-weight:800;
+    margin-bottom:1.75rem;
+    padding-top:1rem;
+    border-bottom:2px solid var(--cobblestone);
+    padding-bottom:.6rem;
+    text-align:center;
+  }
 
-            <article class="categoria">
-                <h3>Pantalones y Jeans</h3>
-                <p>Jeans ajustados, pantalones cargo o casuales. Encuentra el estilo perfecto para ti.</p>
-                </article>
+  .product-col{ display:flex; }
+  .product-card{
+    border:1px solid var(--gardenia);
+    border-radius:14px;
+    overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease;
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+    width:100%;
+  }
+  .product-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 20px rgba(0,0,0,.08);
+  }
 
-            <article class="categoria">
-                <h3>Chaquetas y Abrigos</h3>
-                <p>Las mejores prendas para el frío: cazadoras, parkas y abrigos de temporada.</p>
-            </article>
-            
-        </section>
-        
-        <aside>
-            <h4>Ofertas Destacadas</h4>
-            <p>¡30% de descuento en la colección de invierno!</p>
-        </aside>
-    </main>
+  .product-media{
+    width:100%;
+    aspect-ratio: 4 / 5;
+    background:#f7f7f7;
+  }
+  .product-media img{
+    width:100%; height:100%;
+    object-fit:cover; object-position:center;
+    display:block;
+  }
 
-    <footer>
-        <p>&copy; 2025 Mi Tienda de Ropa. Todos los derechos reservados.</p>
-    </footer>
+  .product-info{
+    padding:1rem 1rem 1.2rem;
+    text-align:center;
+  }
+  .product-title{
+    color:var(--ink);
+    font-weight:700;
+    font-size:1.05rem;
+    margin:0 0 .25rem 0;
+    font-family:"Playfair Display",serif;
+  }
+  .product-price{
+    color:var(--mocha);
+    font-weight:700;
+    margin:0;
+  }
 
-</body>
-</html>
+  .btn-add{
+    background:var(--safari);
+    color:#fff;
+    font-weight:700;
+    border:none;
+    border-radius:12px;
+    padding:.5rem 1rem;
+    font-size:.95rem;
+    margin-top:.7rem;
+    transition:filter .2s ease, transform .2s ease;
+  }
+  .btn-add:hover{ filter:brightness(.93); transform:translateY(-1px); }
+</style>
+
+<section class="container my-5">
+  <h2 class="category-header">COLECCIÓN HOMBRE</h2>
+  <p class="lead text-muted text-center mb-4">
+    Prendas esenciales, cortes relajados y materiales naturales que definen la nueva cápsula de estilo urbano sostenible.
+  </p>
+
+  <div class="row g-4">
+
+    <!-- Chaqueta  beige -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/hombre1.jpeg' %}" alt="Chaqueta ligera beige">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Chaqueta ligera beige</h5>
+          <p class="product-price">$69.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="CHAQUETA LIGERA BEIGE"
+            data-price="69990"
+            data-code="HOM-001"
+            data-color="Beige"
+            data-desc="Chaqueta liviana con cierre frontal y bolsillos laterales. Ideal para entretiempo."
+            data-img1="{% static 'img/hombre/hombre1.jpeg' %}"
+            data-sizes="S,M,L,XL">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Camisa oversize blanca -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/hombre2.jpeg' %}" alt="Camisa oversize blanca">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camisa oversize blanca</h5>
+          <p class="product-price">$35.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="CAMISA OVERSIZE BLANCA"
+            data-price="35990"
+            data-code="HOM-002"
+            data-color="Blanco"
+            data-desc="Camisa amplia de algodón suave con cuello clásico y botonadura frontal."
+            data-img1="{% static 'img/hombre/hombre2.jpeg' %}"
+            data-sizes="S,M,L,XL">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Camisa lino playa -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/camisaplaya.jpeg' %}" alt="Camisa lino playa">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camisa lino playa</h5>
+          <p class="product-price">$25.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="CAMISA LINO PLAYA"
+            data-price="25990"
+            data-code="HOM-003"
+            data-color="Crudo"
+            data-desc="Camisa ligera de lino 100% con textura natural. Perfecta para días cálidos."
+            data-img1="{% static 'img/hombre/camisaplaya.jpeg' %}"
+            data-sizes="S,M,L,XL">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Camiseta Boxy Fit -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/camisetaboxyfit.jpeg' %}" alt="Camiseta Boxy Fit">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camiseta Boxy Fit</h5>
+          <p class="product-price">$22.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="CAMISETA BOXY FIT"
+            data-price="22990"
+            data-code="HOM-004"
+            data-color="Gris"
+            data-desc="Camiseta corte amplio de algodón orgánico con caída relajada."
+            data-img1="{% static 'img/hombre/camisetaboxyfit.jpeg' %}"
+            data-sizes="S,M,L,XL">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Camisa estructura rayas -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/camisaestructurarayas.jpeg' %}" alt="Camisa estructura rayas">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camisa estructura rayas</h5>
+          <p class="product-price">$29.990 CLP</p>
+          <button class="btn btn-add js-product-trigger"
+            data-title="CAMISA ESTRUCTURA RAYAS"
+            data-price="29990"
+            data-code="HOM-005"
+            data-color="Celeste con blanco"
+            data-desc="Camisa estructurada en algodón con textura de rayas finas."
+            data-img1="{% static 'img/hombre/camisaestructurarayas.jpeg' %}"
+            data-sizes="S,M,L,XL">Añadir</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
