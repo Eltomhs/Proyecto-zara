@@ -2,18 +2,34 @@ from __future__ import annotations
 
 from typing import Tuple, List, Dict, Optional
 from functools import lru_cache
-import json
 from datetime import datetime
+import json
+
 import pandas as pd
 from django.http import HttpRequest, HttpResponse, Http404, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
+from django.views.decorators.cache import never_cache
 from django.contrib.staticfiles import finders
 
+# Auth / protección
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
+from django.urls import reverse, reverse_lazy
+from django.conf import settings
 
-# =============================
-#  PÁGINAS BÁSICAS / CATÁLOGO
-# =============================
+
+# =========================
+# CONSTANTES / SLUGS
+# =========================
+# Puedes definir PANEL_SLUG en settings.py; si no, usa "panel-privado"
+PANEL_SLUG = getattr(settings, "PANEL_SLUG", "panel-privado")
+
+
+# =========================
+# PÁGINAS PÚBLICAS / SITIO
+# =========================
 
 def home(request: HttpRequest) -> HttpResponse:
     return render(request, "encuesta_zara/home.html")
@@ -28,41 +44,28 @@ def hombre(request: HttpRequest) -> HttpResponse:
     return render(request, "encuesta_zara/hombre.html")
 
 def nina(request: HttpRequest) -> HttpResponse:
-    # Archivo sin tilde en el nombre del template: "nina.html"
     return render(request, "encuesta_zara/nina.html")
 
 def nino(request: HttpRequest) -> HttpResponse:
-    # Archivo sin tilde en el nombre del template: "nino.html"
     return render(request, "encuesta_zara/nino.html")
 
 def accesorios(request: HttpRequest) -> HttpResponse:
     return render(request, "encuesta_zara/accesorios.html")
 
 def perfume(request: HttpRequest) -> HttpResponse:
-    # Asegúrate de tener "perfumes.html" en templates/encuesta_zara/
     return render(request, "encuesta_zara/perfumes.html")
 
 def tradein(request: HttpRequest) -> HttpResponse:
     return render(request, "encuesta_zara/tradein.html")
 
-
-# =============================
-#  CARRITO DE COMPRAS (LOCALSTORAGE)
-# =============================
-
 def carrito(request: HttpRequest) -> HttpResponse:
-    """
-    Página del carrito. No usa DB: el contenido se renderiza en el cliente
-    leyendo localStorage ('zara_cart'). Esta vista solo entrega el HTML.
-    """
     return render(request, "encuesta_zara/carrito.html")
 
 
-# =============================
-#  CARGA CSV DESDE static/
-# =============================
+# =========================
+# ENCUESTA: CARGA CSV
+# =========================
 
-# Posibles ubicaciones del CSV dentro de static/ (ajusta si cambiaste estructura)
 STATIC_CSV_CANDIDATES = [
     "data/respuestas.csv",
     "zara/data/respuestas.csv",
@@ -71,24 +74,18 @@ STATIC_CSV_CANDIDATES = [
 ]
 
 def _csv_absolute_path() -> str:
-    """
-    Busca el CSV en static/ usando el collector de Django.
-    Lanza FileNotFoundError si no lo encuentra.
-    """
+    """Busca el CSV en /static/; lanza FileNotFoundError si no existe."""
     for rel in STATIC_CSV_CANDIDATES:
         abs_path = finders.find(rel)
         if abs_path:
             return abs_path
     raise FileNotFoundError(
-        "No se encontró 'respuestas.csv' en static/. Probé: " + ", ".join(STATIC_CSV_CANDIDATES)
+        "No se encontró 'respuestas.csv'. Probados: " + ", ".join(STATIC_CSV_CANDIDATES)
     )
 
 @lru_cache(maxsize=1)
 def _load_df() -> pd.DataFrame:
-    """
-    Carga el CSV y aplica limpieza básica.
-    Si no existe o hay error, retorna DataFrame vacío para no romper el dashboard.
-    """
+    """Carga y limpia el CSV. Si falla, retorna DataFrame vacío."""
     try:
         csv_path = _csv_absolute_path()
         df = pd.read_csv(csv_path, encoding="utf-8-sig")
@@ -101,12 +98,12 @@ def _load_df() -> pd.DataFrame:
         if df[c].dtype == object:
             df[c] = df[c].astype(str).str.strip()
 
-    # Normalización de guión en rangos de edad
+    # Normaliza rangos de edad (—/– → -)
     for ec in ["¿En qué rango de edad se encuentra? ", "¿En qué rango de edad se encuentra?"]:
         if ec in df.columns:
-            df[ec] = df[ec].str.replace("–", "-", regex=False)
+            df[ec] = df[ec].str.replace("–", "-", regex=False).str.replace("—", "-", regex=False)
 
-    # Likert (1-5): extrae dígito si viene con texto
+    # Likert: extrae el dígito 1–5 si viene con texto
     for ic in [
         "En una escala de 1 a 5, ¿qué tan importante es para usted la sostenibilidad al comprar ropa? ",
         "En una escala de 1 a 5, ¿qué tan importante es para usted la sostenibilidad al comprar ropa?",
@@ -117,10 +114,7 @@ def _load_df() -> pd.DataFrame:
     return df
 
 
-# =============================
-#  MAPEO Y HELPERS DE ANÁLISIS
-# =============================
-
+# Mapeo de claves internas → columnas del CSV (ajusta si tus encabezados cambian)
 COL: Dict[str, str] = {
     "ts":         "Timestamp",
     "oiste":      "¿Has escuchado el término fast fashion?",
@@ -145,6 +139,7 @@ def _series(df: pd.DataFrame, key: str) -> pd.Series:
     return df[col]
 
 def _yes_no_counts(series: pd.Series) -> Tuple[int, int]:
+    """Cuenta 'sí' vs. 'no/no seguro'; cualquier no-vacío distinto de 'sí' cuenta como 'no'."""
     yes = 0
     no = 0
     for v in series.fillna(""):
@@ -152,11 +147,11 @@ def _yes_no_counts(series: pd.Series) -> Tuple[int, int]:
         if s in YES_WORDS:
             yes += 1
         elif s in NO_WORDS or s != "":
-            # Todo lo que no es 'sí' y no está vacío => 'No / No seguro'
             no += 1
     return int(yes), int(no)
 
 def _cat_counts(series: pd.Series) -> Tuple[List[str], List[int]]:
+    """Cuenta categorías simples."""
     if series.empty:
         return [], []
     vc = series.dropna().astype(str).str.strip()
@@ -167,6 +162,7 @@ def _cat_counts(series: pd.Series) -> Tuple[List[str], List[int]]:
     return counts.index.tolist(), [int(x) for x in counts.values.tolist()]
 
 def _likert_counts(series: pd.Series) -> Tuple[List[str], List[int], Optional[float]]:
+    """Distribución 1–5 y promedio."""
     labels = ["1", "2", "3", "4", "5"]
     if series.empty:
         return labels, [0, 0, 0, 0, 0], None
@@ -176,6 +172,7 @@ def _likert_counts(series: pd.Series) -> Tuple[List[str], List[int], Optional[fl
     return labels, data, avg
 
 def _multi_counts(series: pd.Series) -> Tuple[List[str], List[int]]:
+    """Cuenta selecciones múltiples separadas por coma."""
     if series.empty:
         return [], []
     counts: Dict[str, int] = {}
@@ -187,9 +184,9 @@ def _multi_counts(series: pd.Series) -> Tuple[List[str], List[int]]:
     return list(counts.keys()), [int(x) for x in counts.values()]
 
 
-# =============================
-#  DASHBOARD Y DETALLE
-# =============================
+# ===========================
+# ENCUESTA: DASHBOARD + DETALLE
+# ===========================
 
 def _empty_payload() -> Dict[str, Dict[str, object]]:
     charts = {
@@ -212,6 +209,7 @@ def _empty_payload() -> Dict[str, Dict[str, object]]:
     return {"kpis": kpis, "charts": charts}
 
 def _build_all_datasets(df: pd.DataFrame) -> Dict[str, Dict[str, object]]:
+    """Construye payload para el dashboard y las vistas de detalle."""
     if df is None or df.empty:
         return _empty_payload()
 
@@ -242,22 +240,17 @@ def _build_all_datasets(df: pd.DataFrame) -> Dict[str, Dict[str, object]]:
         "total_respuestas": total,
         "pct_conoce": round((conoce_yes / total) * 100, 1) if total else None,
         "pct_asocia": round((asocia_yes / total) * 100, 1) if total else None,
-        "promedio_importancia": lik_avg if lik_avg is None else float(lik_avg),
+        "promedio_importancia": float(lik_avg) if lik_avg is not None else None,
     }
 
     return {"kpis": kpis, "charts": charts}
 
-
 def informe_encuesta(request: HttpRequest) -> HttpResponse:
-    """
-    Dashboard principal: datasets listos en el context.
-    Si no hay CSV, renderiza todo con ceros/None y muestra aviso en plantilla.
-    """
+    """Dashboard principal de encuesta."""
     df = _load_df()
     payload = _build_all_datasets(df)
     payload["csv_ok"] = not df.empty
     return render(request, "encuesta_zara/informe.html", payload)
-
 
 CHART_TITLES: Dict[str, str] = {
     "conoce": "¿Ha escuchado el término “Fast Fashion”?",
@@ -272,57 +265,36 @@ CHART_TITLES: Dict[str, str] = {
 }
 
 def chart_detail(request: HttpRequest, key: str) -> HttpResponse:
-    """
-    Página de detalle para un gráfico específico del dashboard.
-    """
+    """Detalle de un gráfico del dashboard."""
     if key not in CHART_TITLES:
         raise Http404("Gráfico no encontrado")
-
     df = _load_df()
     payload = _build_all_datasets(df)
     chart = payload["charts"].get(key)
     if not chart:
         raise Http404("Serie no disponible")
-
     context = {
         "key": key,
         "title": CHART_TITLES[key],
-        "chart": chart,          # {type, labels, data, (avg)}
-        "kpis": payload["kpis"], # KPIs para cabecera
+        "chart": chart,
+        "kpis": payload["kpis"],
         "csv_ok": not df.empty,
     }
     return render(request, "encuesta_zara/chart_detail.html", context)
 
 
-# =============================
-#  APIs PARA REGLAS DE NEGOCIO (LOCALSTORAGE)
-# =============================
+# ===========================
+# APIs (REGLAS DE NEGOCIO DEMO)
+# ===========================
 
-# Config de reglas de carrito (sin DB)
-MAX_QTY_PER_ITEM = 10
+MAX_QTY_PER_ITEM = 10  # por ítem
 
-# Ejemplos de cupones; puedes moverlos a settings o DB después
 CUPONES: Dict[str, Dict[str, object]] = {
-    "ECO10": {
-        "percent": 10,
-        "desde": datetime(2025, 1, 1, 0, 0, 0),
-        "hasta": datetime(2025, 12, 31, 23, 59, 59),
-        "activo": True,
-    },
-    "GREEN20": {
-        "percent": 20,
-        "desde": datetime(2025, 11, 1, 0, 0, 0),
-        "hasta": datetime(2025, 11, 30, 23, 59, 59),
-        "activo": True,
-    },
+    "ECO10":   {"percent": 10, "desde": datetime(2025, 1, 1, 0, 0),  "hasta": datetime(2025, 12, 31, 23, 59), "activo": True},
+    "GREEN20": {"percent": 20, "desde": datetime(2025, 11, 1, 0, 0), "hasta": datetime(2025, 11, 30, 23, 59), "activo": True},
 }
 
-# Simulación de stock por SKU (si aún no tienes modelos)
-STOCK: Dict[str, int] = {
-    "SKU-001": 5,
-    "SKU-002": 20,
-    "SKU-003": 2,
-}
+STOCK: Dict[str, int] = {"SKU-001": 5, "SKU-002": 20, "SKU-003": 2}
 
 def _json_body(request: HttpRequest) -> Dict[str, object]:
     try:
@@ -335,36 +307,27 @@ def _cupon_vigente(data: Dict[str, object]) -> bool:
     return bool(data.get("activo")) and data.get("desde") <= now <= data.get("hasta")
 
 def _validar_items(items: List[Dict[str, object]]) -> List[str]:
-    """
-    Devuelve lista de errores; vacía si todo OK.
-    Reglas: qty >=1, qty <= MAX_QTY_PER_ITEM, y qty <= STOCK[sku] si existe.
-    """
+    """Reglas: qty>=1, qty<=MAX_QTY_PER_ITEM, y <= stock si aplica."""
     errores: List[str] = []
     if not items:
         return ["El carrito está vacío."]
-
     for it in items:
         sku = str(it.get("sku", "")).strip()
         try:
             qty = int(it.get("qty") or 0)
         except Exception:
             qty = 0
-
         if qty < 1:
             errores.append(f"{sku}: cantidad mínima 1.")
         if qty > MAX_QTY_PER_ITEM:
-            errores.append(f"{sku}: supera el máximo ({MAX_QTY_PER_ITEM}).")
+            errores.append(f"{sku}: excede el máximo ({MAX_QTY_PER_ITEM}).")
         if sku in STOCK and qty > STOCK[sku]:
             errores.append(f"{sku}: sin stock suficiente (disp: {STOCK[sku]}).")
     return errores
 
 @require_POST
 def api_validar_cupon(request: HttpRequest) -> JsonResponse:
-    """
-    Entrada: { "codigo": "ECO10", "subtotal": 39990 }
-    Salida:  { "ok": true, "percent": 10, "nuevo_total": 35991 }
-    Reglas: cupón activo y vigente en ventana temporal.
-    """
+    """Valida cupón y calcula total con descuento."""
     body = _json_body(request)
     codigo = (body.get("codigo") or "").strip().upper()
     try:
@@ -382,11 +345,7 @@ def api_validar_cupon(request: HttpRequest) -> JsonResponse:
 
 @require_POST
 def api_carrito_validar(request: HttpRequest) -> JsonResponse:
-    """
-    Entrada: { "items": [ { "sku":"SKU-001", "qty": 3 }, ... ] }
-    Salida OK: { "ok": true }
-    Salida error: { "ok": false, "errores": ["..."] }
-    """
+    """Valida cantidades y stock del carrito."""
     body = _json_body(request)
     items = body.get("items") or []
     errores = _validar_items(items)
@@ -396,26 +355,18 @@ def api_carrito_validar(request: HttpRequest) -> JsonResponse:
 
 @require_POST
 def api_checkout_simulado(request: HttpRequest) -> JsonResponse:
-    """
-    “Confirma” la compra si pasa validaciones.
-    Entrada: {
-      "email": "persona@mail.com",
-      "items": [ { "sku":"SKU-001", "qty": 2, "unit": 19990 }, ... ],
-      "cupon": "ECO10" (opcional)
-    }
-    Reglas: carrito válido, aplica cupón vigente, retorna total_final.
-    """
+    """Simula checkout: valida, aplica cupón y retorna total final."""
     body = _json_body(request)
     email = (body.get("email") or "").strip()
     items = body.get("items") or []
     cupon = (body.get("cupon") or "").strip().upper() or None
 
-    # 1) validar carrito
+    # Validación
     errores = _validar_items(items)
     if errores:
         return JsonResponse({"ok": False, "errores": errores}, status=400)
 
-    # 2) subtotal
+    # Subtotal
     subtotal = 0.0
     for it in items:
         try:
@@ -426,10 +377,9 @@ def api_checkout_simulado(request: HttpRequest) -> JsonResponse:
         subtotal += qty * unit
     subtotal = round(subtotal, 2)
 
+    # Cupón
     total = subtotal
     percent = 0
-
-    # 3) cupón (opcional)
     if cupon:
         data = CUPONES.get(cupon)
         if not data or not _cupon_vigente(data):
@@ -437,7 +387,6 @@ def api_checkout_simulado(request: HttpRequest) -> JsonResponse:
         percent = int(data["percent"])
         total = round(subtotal * (1 - percent / 100), 2)
 
-    # (Si luego persistes pedido en DB, este es el lugar.)
     return JsonResponse({
         "ok": True,
         "email": email,
@@ -446,3 +395,70 @@ def api_checkout_simulado(request: HttpRequest) -> JsonResponse:
         "percent": percent,
         "total_final": total
     })
+
+
+# =========================
+# PANEL STAFF (PROTEGIDO)
+# =========================
+
+def _is_staff(u):
+    return u.is_authenticated and u.is_active and u.is_staff
+
+@never_cache
+@user_passes_test(_is_staff, login_url=reverse_lazy('zara:login_cliente'))
+def administrativo(request: HttpRequest) -> HttpResponse:
+    """
+    Panel interno protegido con is_staff.
+    Si no hay sesión o el usuario no es staff → redirige a /login/?next=/<PANEL_SLUG>/
+    """
+    context = {
+        "kpis": {"ventas_hoy": 385000, "ordenes": 72, "ticket": 24500, "carritos": 19},
+        "mix": [42, 31, 10, 11, 6],
+        "mix_labels": ["Mujer", "Hombre", "Niña", "Niño", "Accesorios"],
+        "series": {
+            "labels": ["D1", "D2", "D3", "D4", "D5", "D6", "D7"],
+            "data": [1250000, 920000, 480000, 530000, 310000, 820000, 910000],
+        },
+        "panel_slug": PANEL_SLUG,
+    }
+    return render(request, "encuesta_zara/administrativo.html", context)
+
+
+# =========================
+# LOGIN / LOGOUT
+# =========================
+
+def login_cliente(request: HttpRequest) -> HttpResponse:
+    """
+    Login sencillo de demo:
+    - Usuario: admin
+    - Clave:   123
+    Asegura que admin tenga is_staff=True y autentica con sesiones.
+    """
+    error = None
+    if request.method == "POST":
+        username = (request.POST.get("username") or "").strip()
+        password = (request.POST.get("password") or "").strip()
+
+        if username == "admin" and password == "123":
+            user, _ = User.objects.get_or_create(
+                username="admin",
+                defaults={"is_staff": True, "is_active": True}
+            )
+            if not user.check_password("123"):
+                user.set_password("123")
+            if not user.is_staff:
+                user.is_staff = True
+            user.save()
+
+            user = authenticate(request, username="admin", password="123")
+            if user is not None:
+                login(request, user)
+                next_url = request.POST.get("next") or request.GET.get("next") or reverse("zara:administrativo")
+                return redirect(next_url)
+        error = "Usuario o contraseña incorrectos."
+    return render(request, "encuesta_zara/login.html", {"error": error, "panel_slug": PANEL_SLUG})
+
+def logout_view(request: HttpRequest) -> HttpResponse:
+    logout(request)
+    return redirect("zara:login_cliente")

@@ -6,314 +6,315 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}ZARA{% endblock %}</title>
 
-  <!-- Fuentes -->
+  <!-- Fuentes / estilos -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- AOS (animaciones) -->
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-
-  <!-- Estilos propios -->
-  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="icon" href="{% static 'img/logo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
 
-  {% block extra_css %}{% endblock %}
   <style>
-    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background-color:#fff; }
-    .navbar .nav-link { color:#212529!important; font-weight:500; }
-    .navbar .nav-link:hover { color:#000!important; }
-    .navbar-brand { padding:0; line-height:1; }
-    .navbar-brand img { height:28px; width:auto; display:block; filter:grayscale(100%); }
-    .nav-cart { display:flex; align-items:center; gap:.3rem; }
-    .nav-cart .material-icons { font-size:18px; line-height:1; }
-    footer { background:#fff; color:#6c757d; }
-
-    /* —— Modal de producto —— */
-    #productoModal .modal-dialog { max-width: 90vw; }
-    #productoModal .modal-content { border:0; border-radius:20px; overflow:hidden; }
-    #productoModal .pm-gallery { background:#f7f7f7; }
-    #productoModal #pmMain { width:100%; height:100%; object-fit:cover; aspect-ratio:3/4; }
-    #productoModal .pm-thumbs img{
-      width:88px; height:112px; object-fit:cover; border-radius:10px;
-      border:1px solid #eaeaea; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;
+    :root{
+      --safari:#B6A68E; --mocha:#837060; --tendril:#A9BE70;
+      --cobblestone:#A89C94; --gardenia:#F1E8D9;
+      --rose-tan:#D19C97; --ink:#2c3e50; --stroke:#eee;
     }
-    #productoModal .pm-thumbs img:hover{ transform:translateY(-2px); box-shadow:0 8px 16px rgba(0,0,0,.08); }
-    #productoModal .pm-right{ padding:2.5rem; }
-    @media (min-width: 992px){ #productoModal .pm-right{ padding:3rem; } }
-    #productoModal .pm-title{ font-family:"Playfair Display",serif; }
-    #productoModal .pm-add{ border-radius:14px; padding:.95rem 1rem; font-weight:800; letter-spacing:.5px; }
-    #productoModal .pm-close{ border-radius:14px; }
-    #productoModal .pm-size-btn{ border-radius:12px; min-width:58px; line-height:38px; font-weight:600; }
-    #productoModal .pm-size-btn.active{ background:#222; color:#fff; border-color:#222; }
+    body{ font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:#fff; color:#111; }
+
+    /* NAVBAR */
+    .navbar { background:#fff; border-bottom:1px solid var(--gardenia); }
+    .navbar-brand img{ height:32px; width:auto; display:block; filter:grayscale(100%); }
+    .nav-link{ color:#212529!important; font-weight:500; }
+    .nav-link:hover{ color:var(--mocha)!important; }
+
+    .btn-login{
+      border:1.5px solid var(--mocha);
+      color:var(--mocha);
+      font-weight:600;
+      border-radius:999px;
+      padding:.35rem 1rem;
+      background:#fff;
+      transition:all .2s ease;
+    }
+    .btn-login:hover{ background:var(--mocha); color:#fff; }
+
+    .nav-cart{ display:flex; align-items:center; gap:.35rem; color:var(--ink); text-decoration:none; font-weight:500; }
+    .nav-cart:hover{ color:var(--mocha); }
+    .nav-cart .material-icons{ font-size:20px; line-height:1; }
+
+    /* Toggler en móvil (3 rayas color mocha) */
+    .navbar-toggler{ border:none; }
+    .navbar-toggler-icon{
+      background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23837060' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(131,112,96,1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+
+    /* Offcanvas lateral */
+    .offcanvas{ background-color:#fff; border-right:1px solid var(--gardenia); width:260px; }
+    .offcanvas-header{ border-bottom:1px solid var(--gardenia); }
+    .offcanvas-body .list-group-item{ border:none; font-weight:500; color:var(--ink); padding:.75rem 1rem; }
+    .offcanvas-body .list-group-item:hover{ background:var(--gardenia); color:var(--mocha); }
+
+    footer{ border-color:var(--gardenia)!important; }
+
+    /* Modal producto */
+    .z-modal-img{ width:100%; height:auto; border-radius:12px; border:1px solid var(--gardenia); }
+    .size-pill{
+      border:1px solid var(--cobblestone); border-radius:999px; padding:.35rem .75rem;
+      background:#fff; font-weight:600; cursor:pointer; user-select:none;
+    }
+    .size-pill.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+    .size-grid{ display:flex; flex-wrap:wrap; gap:.5rem; }
   </style>
+
+  {% block styles_extra %}{% endblock %}
 </head>
 
-<body class="theme-neutral bg-white">
-
-<!-- NAVBAR -->
-<nav class="navbar navbar-light navbar-expand-lg py-2 bg-white border-bottom">
-  <div class="container-xxl">
-    <!-- Logo -->
-    <a class="navbar-brand" href="{% url 'zara:home' %}">
-      <img src="{% static 'img/logo.png' %}" alt="ZARA">
-    </a>
-
-    <!-- Botón  -->
-    <button class="navbar-toggler" type="button"
-            data-bs-toggle="offcanvas" data-bs-target="#nav-offcanvas"
-            aria-controls="nav-offcanvas" aria-label="Abrir menú">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <!-- Menú  -->
-    <div class="collapse navbar-collapse d-none d-lg-flex">
-      <ul class="navbar-nav ms-auto align-items-center gap-3">
-        <li class="nav-item"><a class="nav-link" href="{% url 'zara:home' %}">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'zara:mujer' %}">Mujer</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'zara:hombre' %}">Hombre</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'zara:nina' %}">Niña</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'zara:nino' %}">Niño</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'zara:accesorios' %}">Accesorios</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'zara:informe_encuesta' %}">Estadísticas</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'zara:tradein' %}">Trade-In</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Iniciar sesión</a></li>
-        <li class="nav-item">
-          <!-- .js-open-cart -->
-          <a class="nav-link nav-cart js-open-cart" href="{% url 'zara:carrito' %}">
-            <i class="material-icons">shopping_bag</i> <span>Carrito</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<!-- OFFCANVAS  -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="nav-offcanvas" aria-labelledby="nav-offcanvas-label">
-  <div class="offcanvas-header">
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-  </div>
-  <div class="offcanvas-body">
-    <div class="list-group list-group-flush">
-      <a class="list-group-item list-group-item-action" href="{% url 'zara:home' %}">Inicio</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'zara:mujer' %}">Mujer</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'zara:hombre' %}">Hombre</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'zara:nina' %}">Niña</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'zara:nino' %}">Niño</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'zara:accesorios' %}">Accesorios</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'zara:informe_encuesta' %}">Estadísticas</a>
-      <a class="list-group-item list-group-item-action" href="{% url 'zara:tradein' %}">Trade-In</a>
-      <hr class="my-2">
-      <a class="list-group-item list-group-item-action" href="#">Iniciar sesión</a>
-      <a class="list-group-item list-group-item-action d-flex align-items-center gap-2 js-open-cart"
-         href="{% url 'zara:carrito' %}" data-bs-dismiss="offcanvas">
-        <i class="material-icons" style="font-size:18px;">shopping_bag</i> Carrito
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg py-2">
+    <div class="container-xxl d-flex align-items-center justify-content-between">
+      <a class="navbar-brand" href="{% url 'zara:home' %}">
+        <img src="{% static 'img/logo.png' %}" alt="ZARA Logo">
       </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenu"
+              aria-controls="offcanvasMenu" aria-label="Abrir menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-end align-items-center d-none d-lg-flex">
+        <ul class="navbar-nav align-items-center gap-3 mb-0">
+          <li><a class="nav-link" href="{% url 'zara:mujer' %}">Mujer</a></li>
+          <li><a class="nav-link" href="{% url 'zara:hombre' %}">Hombre</a></li>
+          <li><a class="nav-link" href="{% url 'zara:nina' %}">Niña</a></li>
+          <li><a class="nav-link" href="{% url 'zara:nino' %}">Niño</a></li>
+          <li><a class="nav-link" href="{% url 'zara:accesorios' %}">Accesorios</a></li>
+          <li><a class="nav-link" href="{% url 'zara:informe_encuesta' %}">Estadísticas</a></li>
+          <li><a class="nav-link" href="{% url 'zara:tradein' %}">Trade-In</a></li>
+          <li><a class="btn btn-login" href="{% url 'zara:login_cliente' %}">Iniciar sesión</a></li>
+          <li>
+            <a class="nav-cart" href="{% url 'zara:carrito' %}">
+              <i class="material-icons">shopping_bag</i><span>Carrito</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- OFFCANVAS (móvil, izquierda) -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title fw-bold" id="offcanvasMenuLabel">Menú</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="list-group list-group-flush">
+        <a class="list-group-item list-group-item-action" href="{% url 'zara:mujer' %}">Mujer</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'zara:hombre' %}">Hombre</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'zara:nina' %}">Niña</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'zara:nino' %}">Niño</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'zara:accesorios' %}">Accesorios</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'zara:informe_encuesta' %}">Estadísticas</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'zara:tradein' %}">Trade-In</a>
+        <hr>
+        <a class="list-group-item list-group-item-action" href="{% url 'zara:login_cliente' %}">Iniciar sesión</a>
+        <a class="list-group-item list-group-item-action" href="{% url 'zara:carrito' %}">Carrito</a>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- CONTENIDO -->
-<main class="pt-4 container-xxl px-3 px-md-4">
-  {% block content %}{% endblock %}
-</main>
+  <!-- CONTENIDO -->
+  <main class="container-xxl py-4">
+    {% block content %}{% endblock %}
+  </main>
 
-<!-- FOOTER -->
-<footer class="text-center py-4 mt-5 border-top">
-  <p class="mb-0 text-muted">&copy; 2025 ZARA · Proyecto académico</p>
-</footer>
+  <!-- FOOTER -->
+  <footer class="text-center py-4 mt-5 border-top">
+    <p class="mb-0 small text-muted">&copy; 2025 ZARA · Proyecto académico · Inspirado en sostenibilidad</p>
+  </footer>
 
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script> AOS.init({ once:true, duration:700, easing:'ease-out' }); </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-{% block extra_js %}{% endblock %}
-
-<!-- MODAL DE PRODUCTO  -->
-<div class="modal fade" id="productoModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xxl modal-dialog-centered">
-    <div class="modal-content">
-      <div class="row g-0 align-items-stretch">
-        <!-- Imagen -->
-        <div class="col-12 col-lg-7 pm-gallery d-flex flex-column">
-          <img id="pmMain" src="" alt="" class="flex-grow-1">
-          <div class="pm-thumbs d-flex gap-2 p-3 justify-content-center">
-            <img id="pmThumb1" src="" alt="" class="d-none">
-            <img id="pmThumb2" src="" alt="" class="d-none">
-            <img id="pmThumb3" src="" alt="" class="d-none">
-          </div>
+  <!-- MODAL GLOBAL DE PRODUCTO -->
+  <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="pm-title">Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
-
-        <!-- Información -->
-        <div class="col-12 col-lg-5 pm-right d-flex flex-column justify-content-between">
-          <div>
-            <h1 id="pmTitle" class="h3 fw-bold mb-3 pm-title"></h1>
-            <div id="pmPrice" class="h5 fw-semibold mb-2 text-dark"></div>
-            <div id="pmMeta" class="text-muted mb-4 small"></div>
-            <p id="pmDesc" class="mb-4" style="font-size:1.05rem; line-height:1.5;"></p>
-            <!-- Tallas -->
-            <div id="pmSizesBlock" class="mb-4">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <strong>Selecciona tu talla</strong>
-                <a href="#" class="small text-decoration-none text-muted">Guía de tallas</a>
-              </div>
-              <div id="pmSizes" class="d-flex flex-wrap gap-2 mb-2"></div>
-              <div id="pmSizeError" class="text-danger small d-none">Elige una talla para continuar.</div>
+        <div class="modal-body pt-0">
+          <div class="row g-3">
+            <div class="col-12 col-md-5">
+              <img id="pm-img" class="z-modal-img" src="" alt="">
             </div>
-          </div>
+            <div class="col-12 col-md-7">
+              <p class="mb-1 text-muted" id="pm-code"></p>
+              <p class="mb-2" id="pm-desc"></p>
+              <p class="h5 fw-bold mb-3" id="pm-price"></p>
 
-          <div>
-            <button id="pmAdd" class="btn w-100 btn-dark fw-bold text-uppercase pm-add mb-3">
-              Agregar al carro
-            </button>
-            <button type="button" class="btn btn-outline-secondary w-100 pm-close" data-bs-dismiss="modal">
-              Cerrar
-            </button>
+              <div id="pm-size-wrap" class="mb-3" style="display:none;">
+                <label class="form-label fw-semibold mb-2">Talla</label>
+                <div id="pm-sizes" class="size-grid"></div>
+                <div id="pm-size-help" class="form-text">Seleccione una talla.</div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <button id="pm-add" class="btn btn-dark">Añadir al carrito</button>
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+
+              <!-- Campos ocultos -->
+              <input type="hidden" id="pm-sku">
+              <input type="hidden" id="pm-color">
+              <input type="hidden" id="pm-title-hidden">
+              <input type="hidden" id="pm-img-src">
+              <input type="hidden" id="pm-price-raw">
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Toast feedback -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080;">
-  <div id="cartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="toast-body">Producto agregado al carro.</div>
-  </div>
-</div>
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+  {% block extra_js %}
+  <script>
+  // Carrusel automático (si existe en la página que extiende)
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.carousel').forEach(c => {
+      new bootstrap.Carousel(c, { interval: 5000, ride: 'carousel' });
+    });
+  });
 
-<script>
-/* Modal de producto + carrito  ===== */
-document.addEventListener('DOMContentLoaded', function(){
-  const modalEl = document.getElementById('productoModal');
-  if (!modalEl) return;
+  // Utilidades carrito en localStorage
+  const CART_KEY = "zara_cart_v1";
+  function getCart(){
+    try{ return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }catch(e){ return []; }
+  }
+  function setCart(items){ localStorage.setItem(CART_KEY, JSON.stringify(items)); }
+  function addToCart(item){
+    const cart = getCart();
+    // Unificar por sku + talla (si hay)
+    const key = item.sku + '|' + (item.size || '');
+    const idx = cart.findIndex(x => (x.sku + '|' + (x.size || '')) === key);
+    if(idx >= 0){ cart[idx].qty += item.qty; }
+    else{ cart.push(item); }
+    setCart(cart);
+  }
 
-  const pmMain   = document.getElementById('pmMain');
-  const pmTitle  = document.getElementById('pmTitle');
-  const pmPrice  = document.getElementById('pmPrice');
-  const pmMeta   = document.getElementById('pmMeta');
-  const pmDesc   = document.getElementById('pmDesc');
-  const pmSizesB = document.getElementById('pmSizesBlock');
-  const pmSizes  = document.getElementById('pmSizes');
-  const pmAdd    = document.getElementById('pmAdd');
-  const pmErr    = document.getElementById('pmSizeError');
-  const cartToastEl = document.getElementById('cartToast');
+  // Modal de producto (global)
+  let pmModal;
+  document.addEventListener("DOMContentLoaded", () => {
+    const modalEl = document.getElementById('productModal');
+    pmModal = new bootstrap.Modal(modalEl);
 
-  const pmThumb1 = document.getElementById('pmThumb1');
-  const pmThumb2 = document.getElementById('pmThumb2');
-  const pmThumb3 = document.getElementById('pmThumb3');
+    // Delegación: cualquier botón .js-product-trigger abre el modal
+    document.body.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.js-product-trigger');
+      if(!btn) return;
 
-  let currentProduct = null;
-  let selectedSize = null;
-  let sizesRequired = false;
+      ev.preventDefault();
 
-  const formatCLP = (n) => (new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0})).format(n);
+      const title = (btn.dataset.title || '').trim();
+      const price = parseFloat(btn.dataset.price || '0') || 0;
+      const code  = (btn.dataset.code  || '').trim();
+      const color = (btn.dataset.color || '').trim();
+      const desc  = (btn.dataset.desc  || '').trim();
+      const img1  = (btn.dataset.img1  || '').trim();
+      const sku   = (btn.dataset.sku   || '').trim();
+      const sizes = (btn.dataset.sizes || '').trim(); // "XS,S,M,L" o vacío
 
-  document.body.addEventListener('click', function(e){
-    const trigger = e.target.closest('.js-product-trigger');
-    if (!trigger) return;
-    e.preventDefault();
+      // Pinta contenido modal
+      document.getElementById('pm-title').textContent = title || 'Producto';
+      document.getElementById('pm-img').src = img1 || '';
+      document.getElementById('pm-code').textContent = code ? ('Código: ' + code + (color ? ' · ' + color : '')) : (color ? ('Color: ' + color) : '');
+      document.getElementById('pm-desc').textContent = desc || '';
+      document.getElementById('pm-price').textContent = '$ ' + new Intl.NumberFormat('es-CL').format(price) + ' CLP';
 
-    const src   = trigger.hasAttribute('data-title') ? trigger : (trigger.closest('[data-title]') || trigger);
-    const title = src.getAttribute('data-title') || '';
-    const priceRaw = src.getAttribute('data-price') || '';
-    const code  = src.getAttribute('data-code') || '';
-    const color = src.getAttribute('data-color') || '';
-    const desc  = src.getAttribute('data-desc')  || '';
-    const img1  = src.getAttribute('data-img1') || src.querySelector('img')?.src || '';
-    const img2  = src.getAttribute('data-img2') || '';
-    const img3  = src.getAttribute('data-img3') || '';
-    const sizes = (src.getAttribute('data-sizes') || '').split(',').map(s=>s.trim()).filter(Boolean);
-    const sku   = src.getAttribute('data-sku') || code || title;
+      document.getElementById('pm-sku').value = sku;
+      document.getElementById('pm-color').value = color;
+      document.getElementById('pm-title-hidden').value = title;
+      document.getElementById('pm-img-src').value = img1;
+      document.getElementById('pm-price-raw').value = String(price);
 
-    let priceNumber = parseInt(String(priceRaw).replace(/\D/g,''),10);
-    const priceText = isNaN(priceNumber) ? priceRaw : formatCLP(priceNumber);
+      // Tallas
+      const wrap = document.getElementById('pm-size-wrap');
+      const grid = document.getElementById('pm-sizes');
+      grid.innerHTML = '';
+      let hasSizes = false;
 
-    pmMain.src = img1;
+      if(sizes){
+        const arr = sizes.split(',').map(s => s.trim()).filter(Boolean);
+        if(arr.length){
+          hasSizes = true;
+          arr.forEach(s => {
+            const pill = document.createElement('button');
+            pill.type = 'button';
+            pill.className = 'size-pill';
+            pill.textContent = s;
+            pill.dataset.size = s;
+            pill.addEventListener('click', () => {
+              grid.querySelectorAll('.size-pill').forEach(x => x.classList.remove('active'));
+              pill.classList.add('active');
+            });
+            grid.appendChild(pill);
+          });
+        }
+      }
+      wrap.style.display = hasSizes ? 'block' : 'none';
 
-    const setThumb = (el, src) => { if (src) { el.src = src; el.classList.remove('d-none'); } else { el.src=''; el.classList.add('d-none'); } };
-    setThumb(pmThumb1, img1); setThumb(pmThumb2, img2); setThumb(pmThumb3, img3);
-    [pmThumb1, pmThumb2, pmThumb3].forEach(th => th.onclick = () => { if (th.src) pmMain.src = th.src; });
-
-    pmTitle.textContent = title;
-    pmPrice.textContent = priceText;
-    pmMeta.textContent = [color ? `Color: ${color}` : '', code ? `Código ${code}` : ''].filter(Boolean).join(' · ');
-    pmDesc.textContent = desc;
-
-    pmSizes.innerHTML = '';
-    selectedSize = null;
-    pmErr.classList.add('d-none');
-    sizesRequired = sizes.length > 0;
-    pmSizesB.style.display = sizesRequired ? '' : 'none';
-
-    sizes.forEach(size=>{
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'btn btn-outline-dark pm-size-btn';
-      btn.textContent = size;
-      btn.dataset.size = size;
-      btn.addEventListener('click', ()=>{
-        [...pmSizes.querySelectorAll('button')].forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedSize = size;
-        pmErr.classList.add('d-none');
-      });
-      pmSizes.appendChild(btn);
+      pmModal.show();
     });
 
-    currentProduct = { title, priceNumber, priceText, code, color, img: img1, sizes, sku };
-    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    // Añadir al carrito desde el modal
+    document.getElementById('pm-add').addEventListener('click', () => {
+      const sku   = document.getElementById('pm-sku').value;
+      const title = document.getElementById('pm-title-hidden').value;
+      const img   = document.getElementById('pm-img-src').value;
+      const price = parseFloat(document.getElementById('pm-price-raw').value || '0') || 0;
+
+      const wrap = document.getElementById('pm-size-wrap');
+      let size = null;
+      if(wrap.style.display !== 'none'){
+        const active = document.querySelector('#pm-sizes .size-pill.active');
+        if(!active){
+          document.getElementById('pm-size-help').textContent = 'Seleccione una talla.';
+          return;
+        }
+        size = active.dataset.size;
+      }
+
+      const item = {
+        sku, title, img, price,
+        size: size || null,
+        qty: 1,
+        added_at: Date.now()
+      };
+      addToCart(item);
+      pmModal.hide();
+
+      // Pequeño feedback
+      try{
+        const toast = document.createElement('div');
+        toast.className = 'position-fixed bottom-0 end-0 p-3';
+        toast.style.zIndex = 1080;
+        toast.innerHTML = `
+          <div class="toast align-items-center text-bg-dark border-0 show" role="alert">
+            <div class="d-flex">
+              <div class="toast-body">Producto añadido al carrito</div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+          </div>`;
+        document.body.appendChild(toast);
+        setTimeout(()=> toast.remove(), 1800);
+      }catch(e){}
+    });
   });
-
-  pmAdd.addEventListener('click', function(){
-    if (sizesRequired && !selectedSize) { pmErr.classList.remove('d-none'); return; }
-
-    const item = {
-      sku: currentProduct.sku,
-      title: currentProduct.title,
-      price: currentProduct.priceNumber || 0,
-      priceText: currentProduct.priceText,
-      size: sizesRequired ? (selectedSize || '') : '',
-      color: currentProduct.color || '',
-      img: currentProduct.img,
-      qty: 1,
-      addedAt: Date.now()
-    };
-
-    const key = 'zara_cart';
-    const cart = JSON.parse(localStorage.getItem(key) || '[]');
-    const i = cart.findIndex(x => x.sku===item.sku && x.size===item.size);
-    if (i>=0) cart[i].qty += 1; else cart.push(item);
-    localStorage.setItem(key, JSON.stringify(cart));
-
-    if (cartToastEl && window.bootstrap?.Toast) { new bootstrap.Toast(cartToastEl, { delay: 1500 }).show(); }
-  });
-});
-
-document.addEventListener('click', function(e){
-  const link = e.target.closest('a.js-open-cart');
-  if (!link) return;
-
-  e.preventDefault();
-  const href = link.getAttribute('href');
-
-  const ocEl = document.getElementById('nav-offcanvas');
-  const isOpen = ocEl && ocEl.classList.contains('show');
-
-  if (isOpen && window.bootstrap?.Offcanvas) {
-    const oc = bootstrap.Offcanvas.getInstance(ocEl) || new bootstrap.Offcanvas(ocEl);
-    oc.hide();
-    setTimeout(() => { window.location.assign(href); }, 220);
-  } else {
-    window.location.assign(href);
-  }
-});
-</script>
+  </script>
+  {% endblock %}
 </body>
 </html>

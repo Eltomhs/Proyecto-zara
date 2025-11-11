@@ -1,0 +1,415 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}Panel · ZARA{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="m-0 panel-title">Panel administrativo</h1>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary btn-sm" href="{% url 'zara:logout' %}">Cerrar sesión</a>
+      <a class="btn btn-dark btn-sm" href="{% url 'zara:home' %}">Volver al sitio</a>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="row g-3 mb-2">
+    <div class="col-6 col-md-3">
+      <div class="card kpi-card">
+        <div class="card-body">
+          <div class="kpi-label">Ventas hoy</div>
+          <div class="kpi-value" id="kpi-ventas-hoy">—</div>
+          <div class="kpi-note text-success" id="kpi-ventas-variacion">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card kpi-card">
+        <div class="card-body">
+          <div class="kpi-label">Órdenes</div>
+          <div class="kpi-value" id="kpi-ordenes">—</div>
+          <div class="kpi-note">Ticket prom.: <span id="kpi-ticket">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card kpi-card">
+        <div class="card-body">
+          <div class="kpi-label">Carritos creados</div>
+          <div class="kpi-value" id="kpi-carritos">—</div>
+          <div class="kpi-note">Conversión: <span id="kpi-conversion">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card kpi-card">
+        <div class="card-body">
+          <div class="kpi-label">Trade-In</div>
+          <div class="kpi-value"><span id="kpi-tradein-rate">—</span></div>
+          <div class="kpi-note">Ahorro prom.: <span id="kpi-tradein-ahorro">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="chart-title">Ventas por día (últimos 7 días)</h2>
+          <div class="chart-wrap"><canvas id="chartVentasDia"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="chart-title">Mix por categoría</h2>
+          <div class="chart-wrap"><canvas id="chartMixCategoria"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="chart-title">¿Quién compra más? (por género)</h2>
+          <div class="chart-wrap sm"><canvas id="chartGenero"></canvas></div>
+          <p class="small text-muted mt-2 m-0" id="nota-genero">—</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="chart-title">Trade-In: participación y recolecta</h2>
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="chart-wrap sm"><canvas id="chartTradeInRate"></canvas></div>
+            </div>
+            <div class="col-6">
+              <div class="chart-wrap sm"><canvas id="chartTradeInItems"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Chart.js (si ya lo cargas en base.html, elimina esta línea) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4"></script>
+
+<script>
+(() => {
+  // ====== Paleta desde CSS (para gráficos) ======
+  const cssVar = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const COLS = {
+    safari:     cssVar('--safari'),
+    mocha:      cssVar('--mocha'),
+    tendril:    cssVar('--tendril'),
+    cobble:     cssVar('--cobblestone'),
+    gardenia:   cssVar('--gardenia'),
+    rosetan:    cssVar('--rose-tan'),
+    ink:        cssVar('--ink'),
+  };
+  const rgba = (hex, a=1) => {
+    // admite #abc o #aabbcc
+    const h = hex.replace('#','');
+    const rgb = h.length===3
+      ? [h[0]+h[0], h[1]+h[1], h[2]+h[2]]
+      : [h.substring(0,2), h.substring(2,4), h.substring(4,6)];
+    const [r,g,b] = rgb.map(x => parseInt(x,16));
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  };
+
+  // ====== Datos estáticos de demo ======
+  const ventas7d = {
+    labels: ['Mié','Jue','Vie','Sáb','Dom','Lun','Mar'],
+    data: [920, 1040, 870, 1330, 1180, 990, 1260],   // CLP miles
+    orders: [42, 48, 38, 57, 52, 45, 56]
+  };
+
+  const mixCategoria = {
+    labels: ['Mujer', 'Hombre', 'Niña', 'Niño', 'Accesorios', 'Perfumes'],
+    data: [38, 24, 8, 10, 15, 5]
+  };
+
+  const comprasPorGenero = {
+    labels: ['Femenino','Masculino','No binario','Pref. no decir'],
+    data: [58, 34, 5, 3]
+  };
+
+  const tradeIn = {
+    rate: 18,
+    items: { labels: ['Poleras','Jeans','Chaquetas','Vestidos','Blusas'], data: [42, 28, 19, 15, 12] },
+    ahorroPromedio: 6500 
+  };
+
+  // ====== KPIs ======
+  const ventasHoy = ventas7d.data.at(-1);
+  const ventasAyer = ventas7d.data.at(-2);
+  const variacion = ((ventasHoy - ventasAyer) / ventasAyer * 100).toFixed(1);
+  const totalOrdenes = ventas7d.orders.reduce((a,b)=>a+b,0);
+  const ticketProm = Math.round(
+    (ventas7d.data.reduce((a,b)=>a+b,0) * 1000) / Math.max(1,totalOrdenes)
+  ).toLocaleString('es-CL');
+
+  const carritosCreados = Math.round(totalOrdenes / 0.62); // demo: 62% conv.
+  const conversion = Math.round(totalOrdenes / carritosCreados * 100);
+
+  // Render KPIs
+  document.getElementById('kpi-ventas-hoy').textContent = '$ ' + (ventasHoy*1000).toLocaleString('es-CL');
+  document.getElementById('kpi-ventas-variacion').textContent = (variacion >= 0 ? '▲ ' : '▼ ') + Math.abs(variacion) + '% vs ayer';
+  document.getElementById('kpi-ordenes').textContent = totalOrdenes.toLocaleString('es-CL');
+  document.getElementById('kpi-ticket').textContent = '$ ' + ticketProm;
+  document.getElementById('kpi-carritos').textContent = carritosCreados.toLocaleString('es-CL');
+  document.getElementById('kpi-conversion').textContent = conversion + '%';
+  document.getElementById('kpi-tradein-rate').textContent = tradeIn.rate + '%';
+  document.getElementById('kpi-tradein-ahorro').textContent = '$ ' + tradeIn.ahorroPromedio.toLocaleString('es-CL');
+
+  // Nota de género
+  const totalCompras = comprasPorGenero.data.reduce((a,b)=>a+b,0);
+  const pctFem = Math.round(comprasPorGenero.data[0] / totalCompras * 100);
+  document.getElementById('nota-genero').textContent =
+    `Participación femenina: ${pctFem}% del total de compras (demo).`;
+
+  // ====== Chart defaults con paleta ======
+  Chart.defaults.color = COLS.ink;
+  Chart.defaults.font.family = 'Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif';
+  Chart.defaults.elements.line.borderWidth = 2;
+  Chart.defaults.plugins.legend.labels.boxWidth = 14;
+
+  const currencyCL = (v) => {
+    const n = typeof v === 'number' ? v : (v && v.parsed) ? v.parsed.y : 0;
+    return '$ ' + Math.round(n * 1000).toLocaleString('es-CL');
+  };
+
+  // Ventas por día (línea + barras)
+  new Chart(document.getElementById('chartVentasDia'), {
+    type: 'line',
+    data: {
+      labels: ventas7d.labels,
+      datasets: [{
+        label: 'Ventas (CLP miles)',
+        data: ventas7d.data,
+        tension: .35,
+        fill: true,
+        backgroundColor: rgba(COLS.rosetan, .2),
+        borderColor: COLS.rosetan,
+        pointBackgroundColor: COLS.rosetan,
+        pointBorderColor: '#fff'
+      },{
+        label: 'Órdenes',
+        data: ventas7d.orders,
+        type: 'bar',
+        yAxisID: 'y2',
+        backgroundColor: rgba(COLS.tendril, .6),
+        borderColor: rgba(COLS.tendril, .9)
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode:'index', intersect:false },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: rgba(COLS.gardenia, .7) },
+          ticks: { callback: (v)=>'$ ' + v.toLocaleString('es-CL') }
+        },
+        y2: {
+          position: 'right',
+          beginAtZero: true,
+          grid: { drawOnChartArea:false },
+          ticks: { color: COLS.cobble }
+        },
+        x: { grid: { display:false } }
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ctx.dataset.type !== 'bar'
+              ? `${ctx.dataset.label}: ${currencyCL(ctx.raw)}`
+              : `${ctx.dataset.label}: ${ctx.raw.toLocaleString('es-CL')}`
+          }
+        },
+        legend: { display: true }
+      }
+    }
+  });
+
+  // Mix por categoría (barras)
+  new Chart(document.getElementById('chartMixCategoria'), {
+    type: 'bar',
+    data: {
+      labels: mixCategoria.labels,
+      datasets: [{
+        label: 'Participación (%)',
+        data: mixCategoria.data,
+        backgroundColor: [
+          rgba(COLS.mocha,.8), rgba(COLS.safari,.8), rgba(COLS.tendril,.8),
+          rgba(COLS.cobble,.8), rgba(COLS.rosetan,.8), rgba(COLS.ink,.2)
+        ],
+        borderColor: [
+          COLS.mocha, COLS.safari, COLS.tendril, COLS.cobble, COLS.rosetan, rgba(COLS.ink,.5)
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, max: 50, ticks: { callback: v => v + '%' } },
+        x: { grid: { display:false } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx)=> ctx.raw + '%' } }
+      }
+    }
+  });
+
+  // ¿Quién compra más? (doughnut)
+  new Chart(document.getElementById('chartGenero'), {
+    type: 'doughnut',
+    data: {
+      labels: comprasPorGenero.labels,
+      datasets: [{
+        data: comprasPorGenero.data,
+        backgroundColor: [rgba(COLS.mocha,.9), rgba(COLS.safari,.9), rgba(COLS.tendril,.9), rgba(COLS.cobble,.9)],
+        borderColor: [COLS.mocha, COLS.safari, COLS.tendril, COLS.cobble]
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      cutout: '64%',
+      plugins: {
+        legend: { position:'bottom', labels: { color: COLS.ink } },
+        tooltip: { callbacks: { label: (ctx)=> `${ctx.label}: ${ctx.raw}%` } }
+      }
+    }
+  });
+
+  // Trade-In rate (doughnut)
+  new Chart(document.getElementById('chartTradeInRate'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Con Trade-In','Sin Trade-In'],
+      datasets: [{
+        data: [tradeIn.rate, 100 - tradeIn.rate],
+        backgroundColor: [rgba(COLS.tendril,.9), rgba(COLS.cobble,.4)],
+        borderColor: [COLS.tendril, rgba(COLS.cobble,.7)]
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: { position:'bottom' },
+        tooltip: { callbacks: { label: (ctx)=> `${ctx.label}: ${ctx.raw}%` } }
+      }
+    }
+  });
+
+  // Artículos recolectados (barras)
+  new Chart(document.getElementById('chartTradeInItems'), {
+    type: 'bar',
+    data: {
+      labels: tradeIn.items.labels,
+      datasets: [{
+        label: 'Artículos recolectados',
+        data: tradeIn.items.data,
+        backgroundColor: rgba(COLS.safari,.85),
+        borderColor: COLS.safari
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 5 } },
+        x: { grid: { display:false } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+})();
+</script>
+
+<style>
+  :root{
+    /* Paleta ZARA proyecto */
+    --safari:#B6A68E; 
+    --mocha:#837060; 
+    --tendril:#A9BE70;
+    --cobblestone:#A89C94; 
+    --gardenia:#F1E8D9; 
+    --rose-tan:#D19C97; 
+    --ink:#2c3e50;
+  }
+
+  .panel-title{
+    font-family:"Playfair Display", Georgia, serif;
+    font-weight:700;
+    font-size: clamp(1.25rem, 1.1rem + 0.8vw, 1.6rem);
+    color: var(--mocha);
+    letter-spacing:.2px;
+  }
+
+  .card{
+    border:1px solid var(--gardenia);
+    border-radius:16px;
+    background:#fff;
+    box-shadow:0 6px 20px rgba(0,0,0,.04);
+  }
+  .card .card-body{ padding:1rem 1rem 1.1rem 1rem; }
+  @media (min-width: 992px){
+    .card .card-body{ padding:1.1rem 1.2rem 1.2rem 1.2rem; }
+  }
+
+  /* KPIs */
+  .kpi-card .kpi-label{
+    color:#6b7280; /* gris suave */
+    font-size:.85rem;
+    margin-bottom:.15rem;
+  }
+  .kpi-card .kpi-value{
+    font-weight:800;
+    font-size: clamp(1.15rem, 1rem + 1vw, 1.55rem);
+    color: var(--ink);
+    line-height:1.15;
+  }
+  .kpi-card .kpi-note{
+    font-size:.8rem;
+    color:#7f8c8d;
+    margin-top:.25rem;
+  }
+
+  /* Títulos de gráfico */
+  .chart-title{
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 .75rem 0;
+  }
+
+  /* Contenedor de canvas con altura responsiva */
+  .chart-wrap{
+    position:relative;
+    width:100%;
+    height: 260px;
+  }
+  .chart-wrap.sm{ height: 220px; }
+  @media (min-width: 1200px){
+    .chart-wrap{ height: 300px; }
+    .chart-wrap.sm{ height: 240px; }
+  }
+
+  canvas{ width:100% !important; height:100% !important; }
+</style>
+{% endblock %}
