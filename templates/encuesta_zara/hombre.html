@@ -1,0 +1,216 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Hombre{% endblock %}
+
+{% block content %}
+
+<style>
+  :root{
+    --safari:#B6A68E;
+    --mocha:#837060;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --ink:#2c3e50;
+  }
+
+  .category-header{
+    color:var(--mocha);
+    font-family:"Playfair Display",serif;
+    font-weight:800;
+    margin-bottom:1.75rem;
+    padding-top:1rem;
+    border-bottom:2px solid var(--cobblestone);
+    padding-bottom:.6rem;
+    text-align:center;
+  }
+
+  .product-col{ display:flex; }
+
+  .product-card{
+    border:1px solid var(--gardenia);
+    border-radius:14px;
+    overflow:hidden;
+    background:#fff;
+    transition:.25s ease;
+    width:100%;
+  }
+  .product-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 20px rgba(0,0,0,.08);
+  }
+
+  .product-media{
+    width:100%;
+    aspect-ratio:4/5;
+    background:#f7f7f7;
+  }
+  .product-media img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+
+  .product-info{
+    padding:1rem 1rem 1.25rem;
+    text-align:center;
+  }
+  .product-title{
+    color:var(--ink);
+    font-family:"Playfair Display",serif;
+    font-weight:700;
+    font-size:1.1rem;
+    margin-bottom:.35rem;
+  }
+  .product-price{
+    color:var(--mocha);
+    font-weight:700;
+    margin-bottom:.7rem;
+  }
+
+  .btn-add{
+    background:var(--mocha);
+    color:#fff;
+    font-weight:700;
+    border-radius:10px;
+    padding:.55rem 1.1rem;
+    width:100%;
+    border:none;
+    transition:all .2s ease;
+  }
+  .btn-add:hover{
+    filter:brightness(.93);
+    transform:translateY(-1px);
+  }
+</style>
+
+<section class="container my-5">
+  <h2 class="category-header">COLECCIÓN HOMBRE</h2>
+  <p class="lead text-muted text-center mb-4">
+    Prendas esenciales, cortes relajados y materiales naturales para un estilo urbano sostenible.
+  </p>
+
+  <div class="row g-4">
+
+    <!-- 1. Chaqueta ligera beige -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/hombre1.jpeg' %}" alt="Chaqueta ligera beige">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Chaqueta ligera beige</h5>
+          <p class="product-price">$69.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Chaqueta ligera beige"
+            data-price="69990"
+            data-desc="Chaqueta liviana con cierre frontal y bolsillos laterales."
+            data-code="HOM-001"
+            data-color="Beige"
+            data-img1="{% static 'img/hombre/hombre1.jpeg' %}"
+            data-sizes="S,M,L,XL">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Camisa oversize blanca -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/hombre2.jpeg' %}" alt="Camisa oversize blanca">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camisa oversize blanca</h5>
+          <p class="product-price">$35.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Camisa oversize blanca"
+            data-price="35990"
+            data-desc="Camisa amplia de algodón suave con cuello clásico."
+            data-code="HOM-002"
+            data-color="Blanco"
+            data-img1="{% static 'img/hombre/hombre2.jpeg' %}"
+            data-sizes="S,M,L,XL">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Camisa lino playa -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/camisaplaya.jpeg' %}" alt="Camisa lino playa">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camisa lino playa</h5>
+          <p class="product-price">$25.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Camisa lino playa"
+            data-price="25990"
+            data-desc="Camisa ligera de lino 100%, ideal para días cálidos."
+            data-code="HOM-003"
+            data-color="Crudo"
+            data-img1="{% static 'img/hombre/camisaplaya.jpeg' %}"
+            data-sizes="S,M,L,XL">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Camiseta Boxy Fit -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/camisetaboxyfit.jpeg' %}" alt="Camiseta Boxy Fit">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camiseta Boxy Fit</h5>
+          <p class="product-price">$22.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Camiseta Boxy Fit"
+            data-price="22990"
+            data-desc="Camiseta corte amplio de algodón orgánico con caída relajada."
+            data-code="HOM-004"
+            data-color="Gris"
+            data-img1="{% static 'img/hombre/camisetaboxyfit.jpeg' %}"
+            data-sizes="S,M,L,XL">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Camisa estructura rayas -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/hombre/camisaestructurarayas.jpeg' %}" alt="Camisa estructura rayas">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camisa estructura rayas</h5>
+          <p class="product-price">$29.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Camisa estructura rayas"
+            data-price="29990"
+            data-desc="Camisa estructurada en algodón con textura de rayas finas."
+            data-code="HOM-005"
+            data-color="Celeste con blanco"
+            data-img1="{% static 'img/hombre/camisaestructurarayas.jpeg' %}"
+            data-sizes="S,M,L,XL">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

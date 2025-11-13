@@ -1,0 +1,263 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Compra como invitado{% endblock %}
+
+{% block content %}
+<style>
+  :root{
+    --safari:#B6A68E; 
+    --mocha:#837060; 
+    --mocha-700:#6f5b4f; 
+    --mocha-800:#5d4d42;
+    --cobblestone:#A89C94; 
+    --gardenia:#F1E8D9; 
+    --rose-tan:#D19C97; 
+    --ink:#2c3e50;
+  }
+  
+  .page-title{font-family:"Playfair Display",serif;}
+  .card-elev{background:#fff;border:1px solid var(--gardenia);border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.04);}
+  .summary{position:sticky;top:1rem}
+  .muted{color:#6c757d}
+  .price{font-weight:700;color:#111}
+  .thumb{width:64px;height:80px;object-fit:cover;border-radius:10px}
+  .divider{border-top:1px solid var(--gardenia)}
+  .btn-dark{background:var(--mocha)!important;border-color:var(--mocha)!important;color:#fff!important;border-radius:12px}
+  .btn-dark:hover{background:var(--mocha-700)!important;border-color:var(--mocha-700)!important}
+  .btn-dark:active,.btn-dark:focus{background:var(--mocha-800)!important;border-color:var(--mocha-800)!important;box-shadow:0 0 0 .25rem rgba(131,112,96,.25)!important}
+  .form-check-input:checked{background-color:var(--mocha);border-color:var(--mocha)}
+  @media (max-width:991.98px){ .summary{position:static} }
+</style>
+
+<section class="container-xxl my-4 my-md-5">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h4 m-0 page-title">Compra como invitado</h1>
+    <a href="{% url 'zara:carrito' %}" class="btn btn-outline-secondary btn-sm" style="border-radius:10px">← Volver al carrito</a>
+  </div>
+
+  <div class="row g-4">
+    <!-- Formulario de datos del invitado -->
+    <div class="col-12 col-lg-8">
+      <div class="card-elev p-3 p-md-4">
+        <h5 class="mb-3">Datos de contacto</h5>
+        <form id="guestCheckoutForm" class="needs-validation" novalidate>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" required placeholder="Nombre">
+              <div class="invalid-feedback">Ingresa tu nombre.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Apellido</label>
+              <input type="text" class="form-control" required placeholder="Apellido">
+              <div class="invalid-feedback">Ingresa tu apellido.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" required placeholder="tucorreo@dominio.cl">
+              <div class="invalid-feedback">Ingresa un email válido.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" required placeholder="+56 9 1234 5678">
+              <div class="invalid-feedback">Ingresa un teléfono válido.</div>
+            </div>
+          </div>
+
+          <hr class="my-4 divider">
+
+          <h5 class="mb-3">Dirección de envío</h5>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Calle y número</label>
+              <input type="text" class="form-control" required placeholder="Ej. Av. Siempre Viva 742">
+              <div class="invalid-feedback">Ingresa tu dirección.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Comuna</label>
+              <input type="text" class="form-control" required placeholder="Comuna">
+              <div class="invalid-feedback">Requerido.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Ciudad</label>
+              <input type="text" class="form-control" required placeholder="Ciudad">
+              <div class="invalid-feedback">Requerido.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Región</label>
+              <select class="form-select" required>
+                <option value="" selected disabled>Selecciona…</option>
+                <option>Región Metropolitana</option>
+                <option>Valparaíso</option>
+                <option>Biobío</option>
+                <option>O'Higgins</option>
+                <option>Maule</option>
+                <option>Araucanía</option>
+                <option>Los Lagos</option>
+                <option>Antofagasta</option>
+                <option>Atacama</option>
+                <option>Coquimbo</option>
+                <option>Ñuble</option>
+                <option>Los Ríos</option>
+                <option>Magallanes</option>
+                <option>Arica y Parinacota</option>
+                <option>Tarapacá</option>
+                <option>Aysén</option>
+              </select>
+              <div class="invalid-feedback">Selecciona tu región.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Código Postal (opcional)</label>
+              <input type="text" class="form-control" placeholder="0000000">
+            </div>
+          </div>
+
+          <hr class="my-4 divider">
+
+          <h5 class="mb-3">Método de envío</h5>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="shipMethod" id="shipStore" value="store|0" required>
+                <label class="form-check-label" for="shipStore">Retiro en tienda — $0</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="shipMethod" id="shipStd" value="std|0">
+                <label class="form-check-label" for="shipStd">Envío estándar — $0 (promoción)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="shipMethod" id="shipExp" value="exp|4990">
+                <label class="form-check-label" for="shipExp">Envío express — $4.990</label>
+              </div>
+              <div class="invalid-feedback d-block" id="shipError" style="display:none;">Selecciona un método de envío.</div>
+            </div>
+          </div>
+
+          <hr class="my-4 divider">
+
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="terms" required>
+            <label class="form-check-label small" for="terms">Acepto los términos y condiciones</label>
+            <div class="invalid-feedback">Debes aceptar los términos.</div>
+          </div>
+
+          <div class="d-grid d-md-flex gap-2">
+            <a href="{% url 'zara:carrito' %}" class="btn btn-outline-secondary">Volver</a>
+            <button class="btn btn-dark flex-grow-1">Continuar a pago</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Resumen del pedido -->
+    <div class="col-12 col-lg-4">
+      <div class="card-elev p-3 p-md-4 summary">
+        <h5 class="mb-3">Resumen</h5>
+        <div id="miniList" class="vstack gap-3 mb-3"></div>
+        <div class="divider my-2"></div>
+        <div class="d-flex justify-content-between mb-1"><span class="muted">Subtotal</span><span id="sSubtotal" class="price">$0</span></div>
+        <div class="d-flex justify-content-between mb-1"><span class="muted">Descuento</span><span id="sDiscount" class="text-success">– $0</span></div>
+        <div class="d-flex justify-content-between mb-1"><span class="muted">Envío</span><span id="sShipping">$0</span></div>
+        <hr class="my-3">
+        <div class="d-flex justify-content-between align-items-baseline">
+          <span class="fw-semibold">Total</span><span id="sTotal" class="price h5 mb-0">$0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  const K_CART='zara_cart', K_PREF='zara_cart_prefs';
+  const CLP = n => new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(n||0);
+
+  const miniList = document.getElementById('miniList');
+  const sSubtotal = document.getElementById('sSubtotal');
+  const sDiscount = document.getElementById('sDiscount');
+  const sShipping = document.getElementById('sShipping');
+  const sTotal    = document.getElementById('sTotal');
+
+  const form = document.getElementById('guestCheckoutForm');
+  const shipError = document.getElementById('shipError');
+
+  function read(k, def){ try{ return JSON.parse(localStorage.getItem(k) || JSON.stringify(def)); }catch{return def;} }
+  function getPrefs(){ return read(K_PREF, { promo:null, shipping:'std|0' }); }
+  function normalizePromo(code){
+    if(!code) return null;
+    const c = String(code).trim().toUpperCase();
+    if(c==='ZARA10') return {code:c,type:'percent',value:10,desc:'10% de descuento'};
+    if(c==='ENVIOGRATIS') return {code:c,type:'shipfree',value:1,desc:'Envío estándar gratis'};
+    return null;
+  }
+
+  function render(){
+    const items = read(K_CART, []);
+    const prefs = getPrefs();
+
+    const ship = (prefs.shipping||'std|0');
+    const shipInput = document.querySelector(`input[name="shipMethod"][value="${ship}"]`);
+    if (shipInput) shipInput.checked = true;
+
+    miniList.innerHTML = '';
+    let subtotal = 0;
+
+    items.forEach(it=>{
+      const line = (it.price||0) * (it.qty||1);
+      subtotal += line;
+      const row = document.createElement('div');
+      row.innerHTML = `
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <img class="thumb" src="${it.img||''}" alt="">
+            <div>
+              <div class="small fw-semibold">${it.title||''}</div>
+              <div class="small muted">${[it.color||'', it.size?('Talla '+it.size):''].filter(Boolean).join(' · ')} · x${it.qty||1}</div>
+            </div>
+          </div>
+          <div class="price">${CLP(line)}</div>
+        </div>`;
+      miniList.appendChild(row);
+    });
+
+    const promo = normalizePromo(prefs.promo);
+    const discount = promo && promo.type==='percent' ? Math.round(subtotal*(promo.value/100)) : 0;
+
+    const shipSel = document.querySelector('input[name="shipMethod"]:checked');
+    const shipVal = shipSel ? shipSel.value : (prefs.shipping||'std|0');
+    const shipCost = Number((shipVal.split('|')[1])||0);
+
+    const finalShipCost = (promo && promo.code==='ENVIOGRATIS' && shipVal.startsWith('std|')) ? 0 : shipCost;
+
+    sSubtotal.textContent = CLP(subtotal);
+    sDiscount.textContent = discount ? '– ' + CLP(discount) : '– $0';
+    sShipping.textContent = CLP(finalShipCost);
+    sTotal.textContent = CLP(Math.max(0, subtotal - discount) + finalShipCost);
+  }
+
+  document.addEventListener('change', (e)=>{
+    if (e.target && e.target.name === 'shipMethod') {
+      shipError.style.display = 'none';
+      render();
+      const prefs = getPrefs();
+      prefs.shipping = e.target.value;
+      localStorage.setItem(K_PREF, JSON.stringify(prefs));
+    }
+  });
+
+  form.addEventListener('submit', (ev)=>{
+    ev.preventDefault(); ev.stopPropagation();
+    const shipSel = document.querySelector('input[name="shipMethod"]:checked');
+    if (!shipSel) { shipError.style.display = 'block'; }
+    if (!form.checkValidity() || !shipSel) { form.classList.add('was-validated'); return; }
+    // SIGUIENTE PASO REAL: pago
+    window.location.href = "{% url 'zara:pago' %}";
+  });
+
+  render();
+})();
+</script>
+{% endblock %}

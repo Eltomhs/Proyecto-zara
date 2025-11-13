@@ -1,0 +1,240 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Niño{% endblock %}
+
+{% block content %}
+
+<style>
+  :root{
+    --tendril:#A9BE70;
+    --mocha:#837060;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --ink:#2c3e50;
+  }
+
+  .category-header{
+    color:var(--tendril);
+    font-family:"Playfair Display",serif;
+    font-weight:800;
+    margin-bottom:1.75rem;
+    padding-top:1rem;
+    border-bottom:2px solid var(--cobblestone);
+    padding-bottom:.6rem;
+    text-align:center;
+  }
+
+  .product-col{ display:flex; }
+
+  .product-card{
+    border:1px solid var(--gardenia);
+    border-radius:14px;
+    overflow:hidden;
+    background:#fff;
+    transition:.25s ease;
+    width:100%;
+  }
+  .product-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 20px rgba(0,0,0,.08);
+  }
+
+  .product-media{
+    width:100%;
+    aspect-ratio:4/5;
+    background:#f7f7f7;
+  }
+  .product-media img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+
+  .product-info{
+    padding:1rem 1rem 1.25rem;
+    text-align:center;
+  }
+  .product-title{
+    color:var(--ink);
+    font-family:"Playfair Display",serif;
+    font-weight:700;
+    font-size:1.05rem;
+    margin-bottom:.35rem;
+  }
+  .product-price{
+    color:var(--mocha);
+    font-weight:600;
+    margin-bottom:.7rem;
+  }
+
+  .btn-add{
+    background:var(--tendril);
+    color:#fff;
+    font-weight:700;
+    border-radius:10px;
+    padding:.55rem 1.1rem;
+    font-size:.95rem;
+    border:none;
+    transition:all .2s ease;
+  }
+  .btn-add:hover{
+    filter:brightness(.93);
+    transform:translateY(-1px);
+  }
+</style>
+
+<section class="container my-5">
+  <h2 class="category-header">COLECCIÓN NIÑO</h2>
+  <p class="lead text-muted text-center mb-4">
+    Diseños cómodos y versátiles que acompañan cada día con estilo natural.
+  </p>
+
+  <div class="row g-4">
+
+    <!-- 1. Blazer comfort traje beige -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niño/BlazercomforttrajeBeige.jpeg' %}" alt="Blazer comfort traje beige">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Blazer comfort traje beige</h5>
+          <p class="product-price">$49.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Blazer comfort traje beige"
+            data-price="49990"
+            data-desc="Blazer ligero tipo traje, cómodo y elegante. Ideal para ocasiones especiales."
+            data-code="NINO-001"
+            data-color="Beige claro"
+            data-img1="{% static 'img/niño/BlazercomforttrajeBeige.jpeg' %}"
+            data-sizes="5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Camisa cuadros naranja -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niño/camisacuadrosnaranja.jpeg' %}" alt="Camisa cuadros naranja">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camisa cuadros naranja</h5>
+          <p class="product-price">$27.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Camisa cuadros naranja"
+            data-price="27990"
+            data-desc="Camisa de franela suave a cuadros. Perfecta para días frescos."
+            data-code="NINO-002"
+            data-color="Naranja"
+            data-img1="{% static 'img/niño/camisacuadrosnaranja.jpeg' %}"
+            data-sizes="5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Camiseta estampado animal -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niño/camisetaestampadoanimal.jpeg' %}" alt="Camiseta estampado animal">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camiseta estampado animal</h5>
+          <p class="product-price">$19.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Camiseta estampado animal"
+            data-price="19990"
+            data-desc="Camiseta divertida con dibujo animal en algodón orgánico."
+            data-code="NINO-003"
+            data-color="Blanco con estampado"
+            data-img1="{% static 'img/niño/camisetaestampadoanimal.jpeg' %}"
+            data-sizes="5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Conjunto azul -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niño/conjuntoazul.jpeg' %}" alt="Conjunto azul">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Conjunto azul</h5>
+          <p class="product-price">$34.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Conjunto azul"
+            data-price="34990"
+            data-desc="Conjunto de algodón compuesto por polera y short azul marino."
+            data-code="NINO-004"
+            data-color="Azul"
+            data-img1="{% static 'img/niño/conjuntoazul.jpeg' %}"
+            data-sizes="5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Chaqueta denim gris -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niño/niño1.jpeg' %}" alt="Chaqueta denim gris">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Chaqueta denim gris</h5>
+          <p class="product-price">$32.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Chaqueta denim gris"
+            data-price="32990"
+            data-desc="Chaqueta de mezclilla gris con interior suave y corte relajado."
+            data-code="NINO-005"
+            data-color="Gris claro"
+            data-img1="{% static 'img/niño/niño1.jpeg' %}"
+            data-sizes="5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Polerón beige -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niño/niño2.jpeg' %}" alt="Polerón beige">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Polerón beige</h5>
+          <p class="product-price">$20.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Polerón beige"
+            data-price="20990"
+            data-desc="Polerón de algodón orgánico con cuello redondo y rib en mangas."
+            data-code="NINO-006"
+            data-color="Beige"
+            data-img1="{% static 'img/niño/niño2.jpeg' %}"
+            data-sizes="5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

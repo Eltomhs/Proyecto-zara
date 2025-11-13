@@ -1,0 +1,134 @@
+{% extends "encuesta_zara/base.html" %}
+{% block title %}Escanear QR · Trade-In{% endblock %}
+
+{% block content %}
+
+<style>
+  .qr-wrapper{
+    max-width:540px;
+    margin:3rem auto 4rem;
+  }
+  .qr-title{
+    color:var(--mocha);
+    font-family:"Playfair Display",serif;
+    font-weight:600;
+  }
+  .qr-sub{
+    font-size:.9rem;
+    color:var(--muted);
+  }
+  .qr-card{
+    border:1px solid var(--gardenia);
+    border-radius:18px;
+    padding:1.5rem 1.25rem 1.75rem;
+    box-shadow:0 10px 26px rgba(0,0,0,.04);
+    background:#fff;
+  }
+  #reader{
+    width:100%;
+    max-width:320px;
+    margin:0 auto;
+    border-radius:16px;
+    overflow:hidden;
+  }
+  .qr-status{
+    font-size:.85rem;
+  }
+</style>
+
+<section class="container">
+  <div class="qr-wrapper text-center">
+
+    <h2 class="qr-title mb-2">Escanear QR de Trade-In</h2>
+    <p class="qr-sub mb-3">
+      Permite el acceso a la cámara y apunta al <strong>QR de tu prenda</strong>
+      para cargar su pasaporte circular.
+    </p>
+
+    <div class="qr-card">
+      <div id="reader"></div>
+
+      <div id="result" class="qr-status mt-3 fw-semibold"></div>
+
+      <p class="text-muted small mt-3 mb-0">
+        Consejo: si el escaneo no funciona bien, limpia la cámara, sube el brillo
+        de la pantalla del QR o acércate un poco más.
+      </p>
+    </div>
+
+    <div class="mt-3">
+      <a href="{% url 'zara:tradein' %}" class="btn btn-outline-dark btn-sm">
+        ← Volver al Trade-In
+      </a>
+    </div>
+  </div>
+</section>
+
+<script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+<script>
+  const resultEl = document.getElementById('result');
+  let scanner = null;
+  let isRunning = false;
+
+  function showStatus(text, isError = false) {
+    resultEl.textContent = text;
+    resultEl.classList.toggle('text-danger', isError);
+    resultEl.classList.toggle('text-success', !isError && text);
+  }
+
+  function startScanner() {
+    if (isRunning) return;
+
+    scanner = new Html5Qrcode("reader");
+
+    scanner
+      .start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        code => {
+          // Detenemos al primer código leído
+          if (isRunning) {
+            isRunning = false;
+            scanner.stop().catch(() => {});
+          }
+
+          showStatus('Código detectado: ' + code, false);
+
+          // === 1) Pasaporte Digital PDP:CODIGO ===
+          if (code.startsWith('PDP:')) {
+            const codigo = code.split(':')[1];
+            window.location.href = "{% url 'zara_re:pasaporte' %}?codigo=" + encodeURIComponent(codigo);
+            return;
+          }
+
+          // === 2) Trade-In TRADEIN:ID (si quieres seguir usando esto) ===
+          if (code.startsWith('TRADEIN:')) {
+            const id = code.split(':')[1];
+            window.location.href = `/tradein/detalle/${encodeURIComponent(id)}/`;
+            return;
+          }
+
+          // Si el código no tiene formato conocido
+          showStatus('Código leído, pero no tiene un formato válido para Trade-In o PDP.', true);
+        },
+        _err => {
+          // ignoramos errores de lectura continua
+        }
+      )
+      .then(() => {
+        isRunning = true;
+        showStatus('Apunta la cámara hacia el QR de la prenda.');
+      })
+      .catch(err => {
+        console.error(err);
+        showStatus(
+          'No se pudo iniciar la cámara. Revisa los permisos del navegador o prueba con otro dispositivo.',
+          true
+        );
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', startScanner);
+</script>
+
+{% endblock %}

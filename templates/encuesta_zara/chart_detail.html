@@ -1,0 +1,203 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA — Detalle del gráfico{% endblock %}
+
+{% block content %}
+<style>
+  :root{
+    --mocha:#837060; 
+    --tendril:#A9BE70; 
+    --safari:#B6A68E; 
+    --gardenia:#F1E8D9; 
+    --rosetan:#D3A39A;
+    --ink:#1f2328; 
+    --muted:#6b7280;
+    --card-border:1px solid rgba(0,0,0,0.10); 
+    --radius:14px;
+  }
+
+  body{ background-color:#fdfbfa; }
+
+  /* Contenedor principal */
+  .z-section{ margin-bottom:2rem; }
+
+  /* Header */
+  .z-header{
+    background:#fff;
+    border:var(--card-border);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    margin-bottom:1.5rem;
+  }
+
+  .z-title{
+    font-size:1.3rem;
+    font-weight:700;
+    color:var(--ink);
+    margin:0;
+  }
+  .z-desc{ font-size:.95rem; color:var(--muted); margin-top:.3rem; }
+  .btn-back{
+    background:#F1E8D9; border:var(--card-border);
+    border-radius:999px; padding:.4rem .9rem;
+    font-weight:600; color:#4b3f38; text-decoration:none;
+  }
+  .btn-back:hover{ filter:brightness(0.97); }
+
+  /* Layout principal */
+  .z-grid{
+    display:grid;
+    gap:24px;
+    grid-template-columns: 1fr;
+  }
+  @media(min-width:992px){
+    .z-grid{ grid-template-columns: 2fr 1fr; }
+  }
+
+  /* Tarjetas */
+  .z-card{
+    background:#fff;
+    border:var(--card-border);
+    border-radius:var(--radius);
+    padding:18px;
+  }
+
+  .z-card h3{
+    font-size:1rem;
+    font-weight:700;
+    margin:0 0 .3rem 0;
+    color:var(--ink);
+  }
+  .z-card p{ margin:0; color:var(--muted); font-size:.9rem; }
+
+  .chart-box{
+    position:relative;
+    height: clamp(240px, 36vh, 360px);
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:.5rem;
+  }
+  th, td{
+    padding:.55rem .7rem;
+    text-align:left;
+    border-bottom:1px solid rgba(0,0,0,0.05);
+    font-size:.92rem;
+  }
+  th{ color:var(--muted); font-weight:600; font-size:.85rem; }
+  td{ color:var(--ink); }
+</style>
+
+<div class="container-xxl py-4">
+
+  <!-- Encabezado -->
+  <div class="z-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <a href="{% url 'zara:informe_encuesta' %}" class="btn-back">← Volver</a>
+    <div class="flex-grow-1 text-center">
+      <h1 class="z-title">{{ title }}</h1>
+      <p class="z-desc">
+        Este análisis permite visualizar cómo responden los participantes frente a esta pregunta,
+        ayudando a comprender el nivel de percepción y conciencia del consumidor en relación a la sostenibilidad y la moda rápida.
+      </p>
+    </div>
+    <div class="chip" style="background:#fff;border:var(--card-border)">
+      Muestra: {{ kpis.total_respuestas|default:"—" }}
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="z-grid">
+    <!-- Gráfico -->
+    <div class="z-card">
+      <h3>Gráfico</h3>
+      <p>Visualización del resultado seleccionado</p>
+      <div class="chart-box mt-2">
+        <canvas id="detailChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Desglose -->
+    <div class="z-card">
+      <h3>Desglose</h3>
+      <p>Resumen de respuestas</p>
+      <table class="mt-2" id="dataTable">
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>numero</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+
+<!-- JSON seguro del gráfico -->
+{{ chart|json_script:"chart-data" }}
+
+<script>
+  const chartData = JSON.parse(document.getElementById('chart-data').textContent);
+  const PALETTE = ["#A9BE70","#B6A68E","#D3A39A","#837060","#F1E8D9"];
+  const ctx = document.getElementById('detailChart');
+  const type = chartData.type || 'bar';
+
+  // Filtra NaN/undefined
+  const clean = chartData.labels.map((l,i)=>({label:l,data:chartData.data[i]}))
+    .filter(x => x.label && x.label.toLowerCase()!=="nan" && x.label.toLowerCase()!=="undefined");
+
+  // Llenar tabla manualmente con % calculado
+  const tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML = "";
+  const total = clean.reduce((a,b)=>a+b.data,0);
+  clean.forEach(r=>{
+    const pct = total? ((r.data*100)/total).toFixed(1)+'%' : '';
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.label}</td><td>${r.data}</td><td>${pct}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  new Chart(ctx,{
+    type,
+    data:{
+      labels: clean.map(x=>x.label),
+      datasets:[{
+        data: clean.map(x=>x.data),
+        backgroundColor:(type==='bar')?PALETTE:PALETTE,
+        borderRadius:(type==='bar')?8:0
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          display:(type==='pie'||type==='doughnut'),
+          position:'bottom',
+          labels:{ color:'#1f2328' }
+        },
+        tooltip:{
+          callbacks:{
+            label:(c)=>{
+              const v=c.raw??0;
+              const pct= total?((v*100)/total).toFixed(1)+'%':'';
+              return `${c.label}: ${v}${pct?` (${pct})`:''}`;
+            }
+          }
+        }
+      },
+      scales:(type==='bar')?{
+        x:{ticks:{color:'#1f2328'},grid:{color:'rgba(0,0,0,0.06)'}},
+        y:{beginAtZero:true,ticks:{color:'#1f2328'},grid:{color:'rgba(0,0,0,0.06)'}}
+      }:{}
+    }
+  });
+</script>
+{% endblock %}

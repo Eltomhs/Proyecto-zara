@@ -1,0 +1,96 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+{% block title %}Wallet Circular{% endblock %}
+
+{% block content %}
+<style>
+  .card-elev{
+    border:1px solid var(--gardenia);
+    border-radius:16px;
+    box-shadow:0 4px 14px rgba(0,0,0,.04);
+    background:#fff;
+  }
+  .table thead th{
+    font-weight:600;
+    color:var(--mocha);
+  }
+</style>
+
+<section class="container my-4 my-md-5" style="max-width:920px;">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="mb-0 fw-semibold" style="color:var(--mocha);">Wallet circular</h2>
+    <a class="btn btn-outline-dark" href="{% url 'zara:tradein' %}">Nuevo canje</a>
+  </div>
+
+  <!-- Resumen -->
+  <div class="card-elev p-4 mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div>
+        <div class="small text-muted">Puntos totales</div>
+        <div class="fs-2 fw-bold">{{ total_puntos|default:0 }}</div>
+      </div>
+      <div class="flex-grow-1" style="min-width:260px;">
+        <div class="small text-muted mb-1">Progreso hacia Eco Oro (300 pts)</div>
+        <div class="progress" role="progressbar" aria-label="wallet" style="height:10px;">
+          <div id="walletBar"
+               class="progress-bar"
+               data-progress="{{ total_puntos|default:0 }}">
+          </div>
+        </div>
+        <div class="small text-muted mt-1">
+          1 punto = $1 de descuento en futuras compras.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div class="card-elev p-3 p-md-4">
+    <h5 class="mb-3">Historial de canjes</h5>
+    {% if canjes %}
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Prenda</th>
+              <th>Material</th>
+              <th class="text-end">Impacto</th>
+              <th class="text-end">Puntos</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in canjes %}
+            <tr>
+              <td>{{ c.fecha|date:"d/m/Y H:i" }}</td>
+              <td>{{ c.prenda }}</td>
+              <td>{{ c.material }}</td>
+              <td class="text-end">{{ c.impacto }} kg CO₂</td>
+              <td class="text-end fw-semibold">+{{ c.puntos_obtenidos }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="text-muted">
+        Aún no registras canjes.
+        <a href="{% url 'zara:tradein' %}">Haz tu primero</a>.
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  (function(){
+    const maxPts = 300;
+    const bar = document.getElementById('walletBar');
+    if(!bar) return;
+    const pts = parseInt(bar.dataset.progress || '0', 10);
+    const pct = Math.max(0, Math.min(100, Math.round((pts / maxPts) * 100)));
+    bar.style.width = pct + '%';
+    bar.style.backgroundColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--mocha') || '#837060';
+  })();
+</script>
+{% endblock %}

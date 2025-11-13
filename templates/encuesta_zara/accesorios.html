@@ -1,0 +1,239 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Accesorios{% endblock %}
+
+{% block content %}
+
+<style>
+  :root{
+    --safari:#B6A68E;
+    --mocha:#837060;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --rose-tan:#D19C97;
+    --ink:#2c3e50;
+  }
+
+  .category-header{
+    color:var(--mocha);
+    font-family:"Playfair Display", serif;
+    font-weight:800;
+    font-size:2rem;
+    text-align:center;
+    margin-bottom:2rem;
+    padding-top:1rem;
+    border-bottom:3px solid var(--cobblestone);
+    padding-bottom:.75rem;
+  }
+
+  .product-card{
+    border:1px solid var(--gardenia);
+    border-radius:14px;
+    overflow:hidden;
+    background:#fff;
+    transition:.25s ease;
+  }
+  .product-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 20px rgba(0,0,0,.08);
+  }
+</style>
+
+<section class="container my-5">
+
+  <h2 class="category-header">NUEVOS ACCESORIOS</h2>
+  <p class="lead text-muted text-center mb-4">
+    Encuentra el complemento perfecto para tu estilo, con materiales sostenibles y diseño de vanguardia.
+  </p>
+
+  <div class="row g-4">
+
+    <!-- 1 -->
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="product-card">
+        <img src="{% static 'img/accesorios/carteracafe.jpeg' %}"
+             class="w-100" alt="Cartera Minimalista">
+
+        <div class="p-3 text-center">
+          <h5 class="fw-bold">Cartera Minimalista</h5>
+          <p class="text-muted fw-bold">$49.990 CLP</p>
+
+          <button class="btn btn-add w-100 js-product-trigger"
+            data-title="Cartera Minimalista"
+            data-price="49990"
+            data-desc="Cartera compacta hecha en cuero vegano sostenible."
+            data-code="ACC-001"
+            data-color="Café"
+            data-img1="{% static 'img/accesorios/carteracafe.jpeg' %}">
+            Ver más
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="product-card">
+        <img src="{% static 'img/accesorios/lentesnegro.jpeg' %}"
+             class="w-100" alt="Gafas clásicas">
+
+        <div class="p-3 text-center">
+          <h5 class="fw-bold">Gafas de Sol Clásicas</h5>
+          <p class="text-muted fw-bold">$25.990 CLP</p>
+
+          <button class="btn btn-add w-100 js-product-trigger"
+            data-title="Gafas de Sol Clásicas"
+            data-price="25990"
+            data-desc="Montura ligera con protección UV400."
+            data-code="ACC-002"
+            data-color="Negro"
+            data-img1="{% static 'img/accesorios/lentesnegro.jpeg' %}">
+            Ver más
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="product-card">
+        <img src="{% static 'img/accesorios/panuelo2.jpeg' %}"
+             class="w-100" alt="Pañuelo Seda">
+
+        <div class="p-3 text-center">
+          <h5 class="fw-bold">Pañuelo Estampado Seda</h5>
+          <p class="text-muted fw-bold">$15.990 CLP</p>
+
+          <button class="btn btn-add w-100 js-product-trigger"
+            data-title="Pañuelo Estampado Seda"
+            data-price="15990"
+            data-desc="Pañuelo ligero 100% seda con estampado artístico."
+            data-code="ACC-003"
+            data-color="Multicolor"
+            data-img1="{% static 'img/accesorios/panuelo2.jpeg' %}">
+            Ver más
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="product-card">
+        <img src="{% static 'img/accesorios/collar.jpeg' %}"
+             class="w-100" alt="Collar geométrico">
+
+        <div class="p-3 text-center">
+          <h5 class="fw-bold">Collar Dije Geométrico</h5>
+          <p class="text-muted fw-bold">$12.990 CLP</p>
+
+          <button class="btn btn-add w-100 js-product-trigger"
+            data-title="Collar Dije Geométrico"
+            data-price="12990"
+            data-desc="Dije metálico minimalista con cadena ajustable."
+            data-code="ACC-004"
+            data-color="Dorado"
+            data-img1="{% static 'img/accesorios/collar.jpeg' %}">
+            Ver más
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="product-card">
+        <img src="{% static 'img/accesorios/pulseras.jpeg' %}"
+             class="w-100" alt="Pulseras metálicas">
+
+        <div class="p-3 text-center">
+          <h5 class="fw-bold">Set Pulseras Metálicas</h5>
+          <p class="text-muted fw-bold">$9.990 CLP</p>
+
+          <button class="btn btn-add w-100 js-product-trigger"
+            data-title="Set Pulseras Metálicas"
+            data-price="9990"
+            data-desc="Pack de 3 pulseras con baño dorado y cierre ajustable."
+            data-code="ACC-005"
+            data-color="Oro"
+            data-img1="{% static 'img/accesorios/pulseras.jpeg' %}">
+            Ver más
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="product-card">
+        <img src="{% static 'img/accesorios/cartera2.jpeg' %}"
+             class="w-100" alt="Cartera de mano negra">
+
+        <div class="p-3 text-center">
+          <h5 class="fw-bold">Cartera de Mano Negra</h5>
+          <p class="text-muted fw-bold">$35.990 CLP</p>
+
+          <button class="btn btn-add w-100 js-product-trigger"
+            data-title="Cartera de Mano Negra"
+            data-price="35990"
+            data-desc="Cartera elegante con textura suave y cierre magnético."
+            data-code="ACC-006"
+            data-color="Negro"
+            data-img1="{% static 'img/accesorios/cartera2.jpeg' %}">
+            Ver más
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="product-card">
+        <img src="{% static 'img/accesorios/collar1.jpeg' %}"
+             class="w-100" alt="Collar Eslabones">
+
+        <div class="p-3 text-center">
+          <h5 class="fw-bold">Collar Cadena Eslabones</h5>
+          <p class="text-muted fw-bold">$18.990 CLP</p>
+
+          <button class="btn btn-add w-100 js-product-trigger"
+            data-title="Collar Cadena Eslabones"
+            data-price="18990"
+            data-desc="Cadena gruesa con eslabones entrelazados estilo urbano."
+            data-code="ACC-007"
+            data-color="Oro"
+            data-img1="{% static 'img/accesorios/collar1.jpeg' %}">
+            Ver más
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="product-card">
+        <img src="{% static 'img/accesorios/lentes2.jpeg' %}"
+             class="w-100" alt="Gafas Oversize">
+
+        <div class="p-3 text-center">
+          <h5 class="fw-bold">Gafas de Sol Oversize</h5>
+          <p class="text-muted fw-bold">$29.990 CLP</p>
+
+          <button class="btn btn-add w-100 js-product-trigger"
+            data-title="Gafas de Sol Oversize"
+            data-price="29990"
+            data-desc="Lentes grandes estilo fashion con protección UV."
+            data-code="ACC-008"
+            data-color="Negro"
+            data-img1="{% static 'img/accesorios/lentes2.jpeg' %}">
+            Ver más
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

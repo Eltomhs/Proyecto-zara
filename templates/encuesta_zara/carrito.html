@@ -1,0 +1,325 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Carrito{% endblock %}
+
+{% block content %}
+<section class="container my-4 my-md-5">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="mb-0 fw-semibold" style="color:var(--mocha);">Tu carrito</h2>
+    <button class="btn btn-outline-secondary btn-sm" data-cart-clear>Vaciar carrito</button>
+  </div>
+
+  <div class="row g-4">
+    <!-- Columna izquierda: lista de ítems -->
+    <div class="col-12 col-lg-8">
+      <div class="bg-white border rounded-4 p-3 p-md-4" style="border-color:var(--gardenia);">
+        <div data-cart-list></div>
+      </div>
+    </div>
+
+    <!-- Columna derecha: resumen -->
+    <div class="col-12 col-lg-4">
+      <div class="bg-white border rounded-4 p-3 p-md-4" style="border-color:var(--gardenia);">
+        <h5 class="fw-semibold mb-3">Resumen de compra</h5>
+
+        <!-- Cupón -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Cupón</label>
+          <div class="d-flex gap-2 flex-column flex-sm-row">
+            <input type="text" class="form-control"
+                   placeholder="ZARA10 / ZARA5000 / ENVIOGRATIS"
+                   data-discount-input>
+            <button class="btn btn-dark" data-apply-coupon>Aplicar</button>
+          </div>
+          <div class="form-text mt-1" data-coupon-msg>Sin cupón</div>
+        </div>
+
+        <!-- Envío -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Envío</label>
+          <select class="form-select" data-shipping-select>
+            <option value="std">Estándar — $0 (promoción)</option>
+            <option value="express">Express — $6.900</option>
+            <option value="pickup">Retiro en tienda — $0</option>
+          </select>
+        </div>
+
+        <!-- Totales -->
+        <div class="mb-3">
+          <div class="row py-2">
+            <div class="col">Subtotal</div>
+            <div class="col text-end fw-semibold" data-summary-subtotal>$0</div>
+          </div>
+          <div class="row py-2">
+            <div class="col">Descuento</div>
+            <div class="col text-end text-success fw-semibold" data-summary-discount>$0</div>
+          </div>
+          <div class="row py-2">
+            <div class="col">Envío</div>
+            <div class="col text-end fw-semibold" data-summary-shipping>$0</div>
+          </div>
+          <div class="row py-2">
+            <div class="col fw-bold">Total</div>
+            <div class="col text-end h5 mb-0" data-summary-total>$0</div>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button class="btn btn-dark" data-checkout-open>Pagar</button>
+          <a href="{% url 'zara:home' %}" class="btn btn-outline-secondary">Seguir comprando</a>
+          <a href="{% url 'zara:tradein' %}" class="btn btn-outline-dark">Programa Trade-In</a>
+        </div>
+
+        <!-- Mini resumen opcional -->
+        <div class="d-none">
+          <span data-mini-items>0</span>
+          <span data-mini-total>$0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}{{ block.super }}
+<script>
+(function(){
+  // ===== CONFIGURACIÓN BÁSICA =====
+  const KEY = "cartItems";  // mismo nombre que usa base.html
+
+  const fmtCL = n =>
+    (Number(n) || 0).toLocaleString("es-CL", {
+      style:"currency",
+      currency:"CLP",
+      maximumFractionDigits:0
+    });
+
+  // DOM
+  const $listWrap   = document.querySelector("[data-cart-list]");
+  const $btnClear   = document.querySelector("[data-cart-clear]");
+  const $couponIn   = document.querySelector("[data-discount-input]");
+  const $couponMsg  = document.querySelector("[data-coupon-msg]");
+  const $btnCoupon  = document.querySelector("[data-apply-coupon]");
+  const $shipSel    = document.querySelector("[data-shipping-select]");
+  const $sSubtotal  = document.querySelector("[data-summary-subtotal]");
+  const $sDiscount  = document.querySelector("[data-summary-discount]");
+  const $sShipping  = document.querySelector("[data-summary-shipping]");
+  const $sTotal     = document.querySelector("[data-summary-total]");
+  const $btnCheckout= document.querySelector("[data-checkout-open]");
+
+  // ===== LECTURA / ESCRITURA CARRITO =====
+  function readRaw(){
+    try{
+      return JSON.parse(localStorage.getItem(KEY) || "[]");
+    }catch(e){
+      return [];
+    }
+  }
+
+  // Normalizar a un formato único
+  function normalize(items){
+    if(!Array.isArray(items)) return [];
+    return items.map(it => {
+      const id    = it.id    || it.sku || it.code || "";
+      const title = it.nombre|| it.title|| it.producto || "Producto";
+      const price = Number(it.precio ?? it.price ?? 0);
+      const qty   = Number(it.qty    ?? it.cantidad ?? 1);
+      const size  = it.talla || it.size || "";
+
+      return { id, title, price, qty, size };
+    }).filter(x => x.id || x.title);
+  }
+
+  function getCart(){
+    return normalize(readRaw());
+  }
+
+  function setCart(items){
+    localStorage.setItem(KEY, JSON.stringify(items));
+    // actualizar badge del header si existe
+    if(window.__ZARA_CART__ && typeof window.__ZARA_CART__.updateBadge === "function"){
+      window.__ZARA_CART__.updateBadge();
+    }
+  }
+
+  // ===== CUPONES Y ENVÍO (DEMO) =====
+  function getCoupon(){
+    return (localStorage.getItem("zara_coupon") || "").toUpperCase();
+  }
+  function setCoupon(code){
+    localStorage.setItem("zara_coupon", (code || "").toUpperCase());
+  }
+
+  function getShipping(){
+    return localStorage.getItem("zara_shipping") || "std";
+  }
+  function setShipping(v){
+    localStorage.setItem("zara_shipping", v || "std");
+  }
+
+  function shippingCost(mode){
+    if(mode === "express") return 6900;
+    if(mode === "pickup") return 0;
+    return 0; // estándar en promo
+  }
+
+  function couponDiscount(code, subtotal){
+    code = (code || "").toUpperCase();
+    if(!code) return 0;
+    if(code === "ZARA10")      return Math.round(subtotal * 0.10);
+    if(code === "ZARA5000")    return 5000;
+    if(code === "ENVIOGRATIS") return 0;
+    return 0;
+  }
+
+  function couponText(code){
+    if(!code) return "Sin cupón";
+    if(code === "ZARA10")      return "Cupón ZARA10 aplicado: -10%";
+    if(code === "ZARA5000")    return "Cupón ZARA5000 aplicado: -$5.000";
+    if(code === "ENVIOGRATIS") return "Cupón ENVIOGRATIS aplicado: Envío $0";
+    return "Cupón no válido";
+  }
+
+  // ===== RENDER LISTA =====
+  function render(){
+    const items = getCart();
+
+    if(!items.length){
+      $listWrap.innerHTML = `
+        <div class="text-center p-4 border rounded-3"
+             style="border-color:var(--gardenia);background:#fff;">
+          Tu carrito está vacío.
+        </div>`;
+      totals();
+      return;
+    }
+
+    $listWrap.innerHTML = items.map(it => `
+      <div class="py-3 border-bottom" style="border-color:var(--gardenia);">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div class="flex-grow-1">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+              <strong>${it.title}</strong>
+              ${it.size
+                ? `<span class="badge rounded-pill text-dark"
+                         style="border:1px solid var(--cobblestone);background:#fff;">
+                     Talla ${it.size}
+                   </span>`
+                : ""
+              }
+              ${it.id
+                ? `<span class="text-muted small">ID: ${it.id}</span>`
+                : ""
+              }
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-sm btn-outline-secondary"
+                      data-act="dec" data-id="${it.id}" data-size="${it.size || ""}">−</button>
+              <span class="px-1">${it.qty || 1}</span>
+              <button class="btn btn-sm btn-outline-secondary"
+                      data-act="inc" data-id="${it.id}" data-size="${it.size || ""}">+</button>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="fw-semibold">
+                ${fmtCL((it.price || 0) * (it.qty || 1))}
+              </span>
+              <button class="btn btn-sm btn-link text-danger"
+                      data-act="del" data-id="${it.id}" data-size="${it.size || ""}">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join("");
+
+    totals();
+  }
+
+  // ===== RENDER TOTALES =====
+  function totals(){
+    const items = getCart();
+    const subtotal = items.reduce((a,b)=> a + (b.price||0)*(b.qty||0), 0);
+    const code = getCoupon();
+    const shipMode = getShipping();
+    const ship = (code === "ENVIOGRATIS") ? 0 : shippingCost(shipMode);
+    const discount = Math.min(couponDiscount(code, subtotal), subtotal);
+    const total = Math.max(0, subtotal - discount) + ship;
+
+    if($sSubtotal) $sSubtotal.textContent = fmtCL(subtotal);
+    if($sDiscount) $sDiscount.textContent = fmtCL(discount);
+    if($sShipping) $sShipping.textContent = fmtCL(ship);
+    if($sTotal)    $sTotal.textContent    = fmtCL(total);
+    if($couponMsg) $couponMsg.textContent = couponText(code);
+
+    const miniItems = document.querySelector("[data-mini-items]");
+    const miniTotal = document.querySelector("[data-mini-total]");
+    if(miniItems) miniItems.textContent = items.reduce((a,b)=>a+(b.qty||0),0);
+    if(miniTotal) miniTotal.textContent = fmtCL(total);
+  }
+
+  // ===== EVENTOS =====
+  // Botones + / - / eliminar
+  document.addEventListener("click", e => {
+    const btn = e.target.closest("[data-act]");
+    if(!btn) return;
+    const act  = btn.dataset.act;
+    const id   = btn.dataset.id;
+    const size = btn.dataset.size || "";
+
+    const items = getCart();
+    const idx = items.findIndex(x =>
+      (x.id === id) && ((x.size || "") === size)
+    );
+    if(idx < 0) return;
+
+    if(act === "inc") items[idx].qty = (items[idx].qty || 1) + 1;
+    if(act === "dec") items[idx].qty = Math.max(1, (items[idx].qty || 1) - 1);
+    if(act === "del") items.splice(idx, 1);
+
+    setCart(items);
+    render();
+  });
+
+  // Vaciar carrito
+  $btnClear?.addEventListener("click", () => {
+    if(!confirm("¿Vaciar todo el carrito?")) return;
+    setCart([]);
+    render();
+  });
+
+  // Cupón
+  $btnCoupon?.addEventListener("click", () => {
+    const code = ($couponIn?.value || "").trim().toUpperCase();
+    setCoupon(code);
+    totals();
+  });
+
+  // Envío
+  $shipSel?.addEventListener("change", e => {
+    setShipping(e.target.value);
+    totals();
+  });
+
+  // Checkout demo
+  $btnCheckout?.addEventListener("click", () => {
+    alert("Gracias por tu compra (demo académico). Aquí iría el flujo de pago.");
+  });
+
+  // Inicializar valores de cupón / envío y render
+  if($shipSel) $shipSel.value = getShipping();
+  if($couponIn) $couponIn.value = getCoupon();
+  render();
+
+  // Si otra pestaña modifica el carrito, actualizamos
+  window.addEventListener("storage", ev => {
+    if(ev.key === KEY || ev.key === "zara_coupon" || ev.key === "zara_shipping"){
+      render();
+    }
+  });
+})();
+</script>
+{% endblock %}

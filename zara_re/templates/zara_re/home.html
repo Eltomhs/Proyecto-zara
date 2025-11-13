@@ -1,0 +1,180 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA RE · Circular{% endblock %}
+
+{% block content %}
+<style>
+  .hero-re{
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    background: linear-gradient(135deg, rgba(169,190,112,.12), rgba(209,156,151,.12));
+    border: 1px solid var(--gardenia);
+  }
+  .pill-re{
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    padding:.3rem .8rem;
+    border-radius:999px;
+    font-size:.75rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    border:1px solid rgba(0,0,0,.06);
+    background:#fff;
+  }
+  .feature-card{
+    border-radius:16px;
+    border:1px solid var(--gardenia);
+    background:#fff;
+    padding:1.2rem 1.4rem;
+    height:100%;
+  }
+  .feature-icon{
+    width:32px;
+    height:32px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.1rem;
+    margin-bottom:.6rem;
+    background:rgba(131,112,96,.08);
+  }
+  .tag-chip{
+    display:inline-flex;
+    align-items:center;
+    border-radius:999px;
+    font-size:.7rem;
+    padding:.15rem .6rem;
+    border:1px solid rgba(0,0,0,.06);
+    background:#fff;
+  }
+</style>
+
+<section class="container my-4 my-md-5">
+  <!-- Encabezado -->
+  <div class="mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+      <span class="pill-re mb-2 text-muted">
+        <span style="width:7px;height:7px;border-radius:999px;background:var(--tendril);display:inline-block;"></span>
+        Programa circular
+      </span>
+      <h1 class="h3 h-md-2 mb-1 fw-semibold" style="color:var(--mocha);">
+        ZARA RE · Pasaporte digital y circularidad
+      </h1>
+      <p class="mb-0 text-muted" style="max-width:520px;">
+        Aquí se reúne la parte circular del proyecto: pasaporte digital de producto, depósito Re_
+        y una billetera circular conectada con tu experiencia en Zara.
+      </p>
+    </div>
+
+    <div class="text-md-end">
+      <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">
+        ← Volver a Zara
+      </a>
+    </div>
+  </div>
+
+  <!-- Hero principal -->
+  <div class="hero-re mb-4 mb-md-5">
+    <div class="row align-items-center g-4">
+      <div class="col-md-7">
+        <h2 class="h4 fw-semibold mb-2" style="color:var(--mocha);">
+          Visualiza el ciclo completo de tus prendas
+        </h2>
+        <p class="mb-3 text-muted">
+          Cada prenda tiene una historia: origen de fibras, impacto ambiental estimado y posibilidades
+          de reuso, reventa o reciclaje. ZARA RE permite visualizar todo esto a través de un pasaporte digital,
+          un sistema de depósito reembolsable y una billetera circular.
+        </p>
+
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <span class="tag-chip">Pasaporte de producto</span>
+          <span class="tag-chip">Depósito Re_</span>
+          <span class="tag-chip">Billetera circular</span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{% url 'zara_re_pasaporte' %}" class="btn btn-dark">
+            Ver pasaporte de ejemplo
+          </a>
+          <a href="#funciones-re" class="btn btn-outline-secondary">
+            Descubrir más
+          </a>
+        </div>
+      </div>
+
+      <div class="col-md-5">
+        <div class="bg-white p-3 p-md-4 rounded-4 border" style="border-color:var(--gardenia)!important;">
+          <p class="small text-muted mb-2">Demostración QR ZARA RE</p>
+          <div class="ratio ratio-1x1 mb-3" style="max-width:220px;">
+            <img src="{% static 'img/demo_qr_zara_re.png' %}" alt="QR ZARA RE"
+                 class="w-100 h-100 rounded-3 border" style="object-fit:cover;">
+          </div>
+          <p class="small text-muted mb-0">
+            En tienda, cada etiqueta incluiría un código QR o chip NFC que abriría este pasaporte digital
+            con información completa del producto y opciones de devolución o canje.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bloque de funciones -->
+  <section id="funciones-re" class="mb-4 mb-md-5">
+    <div class="row g-3 g-md-4">
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"></div>
+          <h3 class="h6 fw-semibold mb-1" style="color:var(--mocha);">Pasaporte digital</h3>
+          <p class="small text-muted mb-3">
+            Contiene origen de fibras, información de proveedores, impacto estimado por prenda
+            y consejos de uso y cuidado.
+          </p>
+          <a href="{% url 'zara_re_pasaporte' %}" class="btn btn-sm btn-outline-secondary">
+            Ver pasaporte demo
+          </a>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"></div>
+          <h3 class="h6 fw-semibold mb-1" style="color:var(--mocha);">Depósito Re_</h3>
+          <p class="small text-muted mb-0">
+            Parte del valor de compra queda como depósito. Se recupera al devolver la prenda
+            para reparación, reciclaje o reventa circular.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon"></div>
+          <h3 class="h6 fw-semibold mb-1" style="color:var(--mocha);">Billetera circular</h3>
+          <p class="small text-muted mb-0">
+            Registra depósitos, créditos circulares y el impacto positivo acumulado por cada devolución
+            o canje realizado.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Nota de prototipo -->
+  <section class="mb-4 mb-md-5">
+    <div class="feature-card">
+      <h3 class="h6 fw-semibold mb-1" style="color:var(--mocha);">Prototipo académico</h3>
+      <p class="small text-muted mb-0">
+        Esta versión de ZARA RE es un prototipo creado exclusivamente para fines académicos.
+        Los datos de impacto, canjes y saldos están simulados para ilustrar cómo funcionaría
+        una integración real con la plataforma oficial de Zara.
+      </p>
+    </div>
+  </section>
+
+</section>
+{% endblock %}

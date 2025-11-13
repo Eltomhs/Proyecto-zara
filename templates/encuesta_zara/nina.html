@@ -1,0 +1,243 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Niña{% endblock %}
+
+{% block content %}
+
+<style>
+  :root{
+    --rose-tan:#D19C97;
+    --mocha:#837060;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --ink:#2c3e50;
+  }
+
+  .category-header{
+    color:var(--rose-tan);
+    font-family:"Playfair Display",serif;
+    font-weight:800;
+    font-size:2rem;
+    margin-bottom:2rem;
+    padding-top:1rem;
+    text-align:center;
+    border-bottom:3px solid var(--cobblestone);
+    padding-bottom:.75rem;
+  }
+
+  .product-col{ display:flex; }
+
+  .product-card{
+    background:#fff;
+    border:1px solid var(--gardenia);
+    border-radius:14px;
+    overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease;
+    width:100%;
+  }
+  .product-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 20px rgba(0,0,0,.1);
+  }
+
+  .product-media{
+    width:100%;
+    aspect-ratio:4/5;
+    background:#f7f7f7;
+  }
+  .product-media img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+
+  .product-info{
+    padding:1rem 1rem 1.25rem;
+    text-align:center;
+  }
+  .product-title{
+    color:var(--ink);
+    font-family:"Playfair Display",serif;
+    font-weight:700;
+    font-size:1.1rem;
+    margin-bottom:.35rem;
+  }
+  .product-price{
+    color:var(--mocha);
+    font-weight:600;
+    margin-bottom:.7rem;
+  }
+
+  .btn-add{
+    background:var(--rose-tan);
+    color:#fff;
+    font-weight:700;
+    border-radius:10px;
+    padding:.55rem 1.1rem;
+    font-size:.95rem;
+    border:none;
+    transition:all .2s ease;
+  }
+  .btn-add:hover{
+    background:#b97b75;
+    transform:translateY(-1px);
+  }
+</style>
+
+<section class="container my-5">
+
+  <h2 class="category-header">COLECCIÓN NIÑA</h2>
+
+  <p class="lead text-center text-muted mb-5">
+    Prendas suaves, cómodas y con encanto natural para acompañar cada aventura.
+  </p>
+
+  <div class="row g-4">
+
+    <!-- 1. Blusa blanca flores -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niña/blusablancaconflores.jpeg' %}" alt="">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Blusa blanca con flores</h5>
+          <p class="product-price">$19.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Blusa blanca con flores"
+            data-price="19990"
+            data-desc="Blusa ligera de algodón con bordados florales delicados."
+            data-code="NINA-001"
+            data-color="Blanco floral"
+            data-img1="{% static 'img/niña/blusablancaconflores.jpeg' %}"
+            data-sizes="4,5,6,7,8,9,10">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Camiseta lisa naranja -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niña/camisetalisanaranja.jpeg' %}" alt="">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Camiseta lisa naranja</h5>
+          <p class="product-price">$12.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Camiseta lisa naranja"
+            data-price="12990"
+            data-desc="Camiseta 100% algodón con calce cómodo para uso diario."
+            data-code="NINA-002"
+            data-color="Naranja"
+            data-img1="{% static 'img/niña/camisetalisanaranja.jpeg' %}"
+            data-sizes="4,5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Conjunto de jeans -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niña/conjuntodejeans.jpeg' %}" alt="">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Conjunto de jeans</h5>
+          <p class="product-price">$25.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Conjunto de jeans"
+            data-price="25990"
+            data-desc="Set de camisa denim suave y jeans elásticos de tiro medio."
+            data-code="NINA-003"
+            data-color="Azul claro"
+            data-img1="{% static 'img/niña/conjuntodejeans.jpeg' %}"
+            data-sizes="5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Conjunto verano B/N -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niña/conjuntoveranoblancoynegro.jpeg' %}" alt="">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Conjunto verano blanco y negro</h5>
+          <p class="product-price">$22.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Conjunto verano blanco y negro"
+            data-price="22990"
+            data-desc="Top fresco y falda corta con estampado geométrico en tonos neutros."
+            data-code="NINA-004"
+            data-color="Blanco · Negro"
+            data-img1="{% static 'img/niña/conjuntoveranoblancoynegro.jpeg' %}"
+            data-sizes="4,5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Pack 3 camisetas -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niña/pack3camisetaslisas.jpeg' %}" alt="">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Pack 3 camisetas lisas</h5>
+          <p class="product-price">$17.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Pack 3 camisetas lisas"
+            data-price="17990"
+            data-desc="Pack de 3 camisetas básicas en tonos pastel suaves."
+            data-code="NINA-005"
+            data-color="Multicolor"
+            data-img1="{% static 'img/niña/pack3camisetaslisas.jpeg' %}"
+            data-sizes="5,6,7,8,9,10">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Pantalón negro -->
+    <div class="col-6 col-md-4 col-lg-3 product-col">
+      <div class="product-card">
+        <div class="product-media">
+          <img src="{% static 'img/niña/pantalonnegro.jpeg' %}" alt="">
+        </div>
+        <div class="product-info">
+          <h5 class="product-title">Pantalón negro</h5>
+          <p class="product-price">$19.990 CLP</p>
+
+          <button class="btn btn-add js-product-trigger"
+            data-title="Pantalón negro"
+            data-price="19990"
+            data-desc="Pantalón recto con cintura ajustable y tejido suave."
+            data-code="NINA-006"
+            data-color="Negro"
+            data-img1="{% static 'img/niña/pantalonnegro.jpeg' %}"
+            data-sizes="5,6,7,8,9,10,11,12">
+            Añadir
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

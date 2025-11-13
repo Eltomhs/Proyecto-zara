@@ -1,0 +1,290 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% block title %}ZARA{% endblock %}</title>
+
+  <!-- BOOTSTRAP -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- FUENTES -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+  :root{
+    --safari:#B6A68E;
+    --mocha:#837060;
+    --tendril:#A9BE70;
+    --cobblestone:#A89C94;
+    --gardenia:#F1E8D9;
+    --rose-tan:#D19C97;
+    --ink:#2c3e50;
+    --muted:#7f8c8d;
+  }
+
+  body{
+    font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    background:#fff;
+  }
+
+  /* NAVBAR FIJA */
+  .navbar{
+    padding:.5rem 0 !important;
+    border-bottom:1px solid var(--gardenia) !important;
+  }
+
+  .navbar.fixed-top{
+    background:white;
+    box-shadow:0 4px 18px rgba(0,0,0,.05);
+  }
+
+  .navbar-brand img{ height:26px; }
+
+  .nav-link,
+  .dd-toggle{
+    color:var(--ink) !important;
+    font-size:.9rem;
+    font-weight:600;
+    cursor:pointer;
+    padding:.55rem 1rem !important;
+  }
+  .dd-toggle:hover,
+  .nav-link:hover{
+    color:var(--mocha) !important;
+    background:#f7f4ee;
+    border-radius:.4rem;
+  }
+
+  .nav-item-dd{ position:relative; }
+
+  .dd-menu{
+    display:none;
+    position:absolute;
+    background:#fff;
+    border:1px solid var(--gardenia);
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,.06);
+    padding:.35rem 0;
+    min-width:12rem;
+    top:100%;
+    z-index:999;
+  }
+  .dd-show{ display:block !important; }
+  .dd-item{
+    padding:.5rem 1rem;
+    font-size:.88rem;
+    color:var(--ink);
+    display:block;
+    text-decoration:none;
+  }
+  .dd-item:hover{
+    background:#f7f4ee;
+    color:var(--mocha);
+  }
+  .dd-divider{
+    border-top:1px solid var(--gardenia);
+    margin:.3rem 0;
+  }
+  .dd-item-danger{ color:#c0392b !important; }
+
+  /* SEARCH DESKTOP */
+  .search-wrap{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border-radius:999px;
+    padding:.2rem .65rem;
+    border:1px solid var(--gardenia);
+    background:#fff;
+  }
+  .search-input{
+    border:none;
+    background:transparent;
+    outline:none;
+    width:200px;
+    font-size:.9rem;
+  }
+
+  /* LUPA — versión segura */
+  .icon-lupa{
+    width:18px;
+    height:18px;
+    background-color:var(--mocha);
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15z'/%3E%3C/svg%3E") no-repeat center / contain;
+            mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15z'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+
+  /* SEARCH MOBILE */
+  .mobile-search{
+    border-bottom:1px solid var(--gardenia);
+  }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+  <!-- NAVBAR FIJA -->
+  <nav class="navbar navbar-expand-lg bg-white fixed-top">
+    <div class="container-xxl">
+
+      <a class="navbar-brand" href="{% url 'zara:home' %}">
+        <img src="{% static 'img/logo.png' %}" alt="ZARA">
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+
+        <!-- LEFT -->
+        <ul class="navbar-nav me-auto">
+
+          <!-- Productos -->
+          <li class="nav-item nav-item-dd">
+            <a class="dd-toggle js-dd-toggle" data-dd="productos">Productos</a>
+            <ul class="dd-menu" data-dd-menu="productos">
+              <li><a class="dd-item" href="{% url 'zara:mujer' %}">Mujer</a></li>
+              <li><a class="dd-item" href="{% url 'zara:hombre' %}">Hombre</a></li>
+              <li><a class="dd-item" href="{% url 'zara:nina' %}">Niña</a></li>
+              <li><a class="dd-item" href="{% url 'zara:nino' %}">Niño</a></li>
+              <li><a class="dd-item" href="{% url 'zara:accesorios' %}">Accesorios</a></li>
+            </ul>
+          </li>
+
+          <!-- Circularidad -->
+          <li class="nav-item nav-item-dd">
+            <a class="dd-toggle js-dd-toggle" data-dd="circ">Circularidad</a>
+            <ul class="dd-menu" data-dd-menu="circ">
+              <li><a class="dd-item" href="{% url 'zara_re:home' %}">Zara_Re</a></li>
+              <li><a class="dd-item" href="{% url 'zara_re:pasaporte' %}">Pasaporte</a></li>
+              {% if user.is_authenticated %}
+                <li><a class="dd-item" href="{% url 'zara:tradein' %}">Trade-In</a></li>
+                <li><a class="dd-item" href="{% url 'zara:wallet_view' %}">Wallet</a></li>
+              {% else %}
+                <li><a class="dd-item" href="{% url 'login' %}?next={% url 'zara:tradein' %}">Trade-In</a></li>
+                <li><a class="dd-item" href="{% url 'login' %}?next={% url 'zara:wallet_view' %}">Wallet</a></li>
+              {% endif %}
+            </ul>
+          </li>
+        </ul>
+
+        <!-- SEARCH DESKTOP -->
+        <form class="d-none d-lg-flex me-3" method="get" action="{% url 'zara:buscar' %}">
+          <div class="search-wrap">
+            <span class="icon-lupa"></span>
+            <input class="search-input" placeholder="Buscar…" name="q" value="{{ request.GET.q }}">
+          </div>
+        </form>
+
+        <!-- RIGHT -->
+        <ul class="navbar-nav align-items-center">
+
+          <!-- Cuenta -->
+          <li class="nav-item nav-item-dd">
+            <a class="dd-toggle js-dd-toggle" data-dd="cuenta">
+              {% if user.is_authenticated %}{{ user.username }}{% else %}Cuenta{% endif %}
+            </a>
+            <ul class="dd-menu dd-menu-end" data-dd-menu="cuenta">
+              {% if user.is_authenticated %}
+                <li><a class="dd-item" href="{% url 'zara:cuenta_home' %}">Mi cuenta</a></li>
+                <li><div class="dd-divider"></div></li>
+                <li><a class="dd-item dd-item-danger" href="{% url 'logout' %}">Salir</a></li>
+              {% else %}
+                <li><a class="dd-item" href="{% url 'login' %}?next={{ request.path|urlencode }}">Ingresar</a></li>
+                <li><a class="dd-item" href="{% url 'zara:home' %}#registro">Crear cuenta</a></li>
+              {% endif %}
+            </ul>
+          </li>
+
+          <!-- Carrito -->
+          <li class="nav-item">
+            <a class="nav-link" href="/carrito/">Carrito (<span id="cartCount">0</span>)</a>
+          </li>
+
+        </ul>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- BUSCADOR MÓVIL -->
+  <div class="d-lg-none px-3 py-2 mobile-search mt-5">
+    <form method="get" action="{% url 'zara:buscar' %}">
+      <div class="search-wrap">
+        <span class="icon-lupa"></span>
+        <input class="search-input" placeholder="Buscar…" name="q">
+      </div>
+    </form>
+  </div>
+
+  <!-- MENSAJES -->
+  {% if messages %}
+  <div class="container-xxl mt-4">
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main class="mt-4 pt-2">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-4 mt-5" style="border-top:1px solid var(--gardenia);">
+    <div class="container-xxl small text-muted">
+      © 2025 · Proyecto académico inspirado en ZARA · Circularidad
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  /* DROPDOWNS */
+  (function(){
+    const toggles=document.querySelectorAll(".js-dd-toggle");
+    const menus=document.querySelectorAll(".dd-menu");
+    const closeAll=()=>menus.forEach(m=>m.classList.remove("dd-show"));
+
+    toggles.forEach(t=>{
+      t.addEventListener("click",function(e){
+        e.preventDefault();
+        const key=this.dataset.dd;
+        const menu=document.querySelector('.dd-menu[data-dd-menu="'+key+'"]');
+        const open=menu.classList.contains("dd-show");
+        closeAll();
+        if(!open) menu.classList.add("dd-show");
+      });
+    });
+
+    document.addEventListener("click",e=>{
+      if(!e.target.closest(".nav-item-dd")) closeAll();
+    });
+  })();
+
+  /* CARRITO BADGE */
+  (function(){
+    const KEY="cartItems";
+    const read=()=>JSON.parse(localStorage.getItem(KEY)||"[]");
+    const total=()=>read().reduce((a,i)=>a+Number(i.qty||1),0);
+
+    function update(){
+      const el=document.getElementById("cartCount");
+      if(el) el.textContent=total();
+    }
+
+    window.__ZARA_CART__={update};
+    document.addEventListener("DOMContentLoaded",update);
+  })();
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

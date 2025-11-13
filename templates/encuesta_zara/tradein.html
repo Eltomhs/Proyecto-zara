@@ -1,0 +1,382 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}ZARA · Trade-In{% endblock %}
+
+{% block content %}
+
+<style>
+  .ti-hero{
+    padding:3rem 0 2rem;
+  }
+  .ti-hero-img{
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 12px 30px rgba(0,0,0,0.08);
+  }
+  .ti-hero-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .ti-label{
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    font-size:.8rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--mocha);
+    background:#f8f4ee;
+    padding:.28rem .9rem;
+    border-radius:999px;
+    margin-bottom:.75rem;
+  }
+  .ti-badge-dot{
+    width:7px;height:7px;border-radius:50%;background:var(--tendril);
+  }
+  .ti-title{
+    font-family:"Playfair Display",serif;
+    font-size:2.1rem;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .ti-sub{
+    color:var(--muted);
+    font-size:.95rem;
+  }
+  .ti-highlight{
+    background:rgba(182,166,142,.18);
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    gap:.35rem;
+    padding:.25rem .8rem;
+    font-size:.8rem;
+    margin-top:1rem;
+  }
+
+  /* Cuadros */
+  .ti-grid{
+    margin-top:2.2rem;
+  }
+  .ti-card{
+    border-radius:16px;
+    border:1px solid var(--gardenia);
+    padding:1.3rem 1.2rem;
+    background:#fff;
+    box-shadow:0 6px 18px rgba(0,0,0,0.03);
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    gap:.5rem;
+  }
+  .ti-chip{
+    font-size:.7rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--mocha);
+    background:#f7f1e5;
+    padding:.18rem .7rem;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    gap:.3rem;
+  }
+  .ti-chip-dot{
+    width:6px;height:6px;border-radius:50%;background:var(--rose-tan);
+  }
+  .ti-card h5{
+    font-size:1rem;
+    margin:0;
+    color:var(--ink);
+  }
+  .ti-card p{
+    font-size:.86rem;
+    margin:0;
+    color:var(--muted);
+  }
+  .ti-meta{
+    font-size:.78rem;
+    color:var(--muted);
+  }
+  .ti-list{
+    list-style:none;
+    padding-left:0;
+    margin:0;
+    font-size:.82rem;
+  }
+  .ti-list li{
+    display:flex;
+    align-items:flex-start;
+    gap:.4rem;
+    margin-bottom:.35rem;
+  }
+  .ti-bullet{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    border:1px solid var(--tendril);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:.65rem;
+    color:var(--tendril);
+    margin-top:.05rem;
+  }
+
+  /* Paso a paso */
+  .ti-steps{
+    margin-top:2.8rem;
+    padding:1.6rem 1.4rem;
+    border-radius:18px;
+    background:linear-gradient(120deg,#f7f2e8,#f3f8ee);
+    border:1px solid rgba(182,166,142,.4);
+  }
+  .ti-steps-title{
+    font-size:.9rem;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    color:var(--mocha);
+    margin-bottom:.6rem;
+  }
+  .ti-step-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:1.2rem;
+    margin:0;
+    padding:0;
+    list-style:none;
+    font-size:.86rem;
+  }
+  .ti-step-item{
+    display:flex;
+    align-items:flex-start;
+    gap:.45rem;
+  }
+  .ti-step-num{
+    width:22px;
+    height:22px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid rgba(0,0,0,.1);
+    font-size:.8rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:600;
+    color:var(--mocha);
+    flex-shrink:0;
+  }
+
+  /* Formulario de canje (lo antiguo) */
+  .card-elev {
+    border: 1px solid var(--gardenia);
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,.04);
+    background: #fff;
+  }
+
+  @media (max-width:991.98px){
+    .ti-hero{
+      padding:2.2rem 0 1.4rem;
+    }
+    .ti-title{
+      font-size:1.7rem;
+    }
+    .ti-grid{
+      margin-top:1.6rem;
+    }
+  }
+</style>
+
+<section class="container-xxl ti-hero">
+  <div class="row g-4 align-items-center">
+
+    <!-- Imagen -->
+    <div class="col-lg-5 order-lg-2">
+      <div class="ti-hero-img">
+        <img src="{% static 'img/tradein.jpeg' %}" alt="Entrega tus prendas y dales una nueva vida">
+      </div>
+    </div>
+
+    <!-- Texto -->
+    <div class="col-lg-7 order-lg-1">
+      <div class="ti-label">
+        <span class="ti-badge-dot"></span>
+        Programa circular · Trade-In ZARA
+      </div>
+      <h1 class="ti-title mb-2">Entrega tus prendas y gana saldo en tu Wallet Circular.</h1>
+      <p class="ti-sub mb-0">
+        Trae prendas ZARA que ya no uses y las clasificamos para <strong>reventa, reparación o reciclaje</strong>.
+        Tú recibes saldo y un pasaporte ambiental con el impacto evitado.
+      </p>
+      <div class="ti-highlight">
+        <span>♻︎</span>
+        <span>Da nueva vida a tus prendas y reduce tu huella ambiental.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cuadros -->
+  <div class="ti-grid row g-3 g-lg-4 mt-4">
+
+    <!-- Reventa -->
+    <div class="col-md-4">
+      <article class="ti-card">
+        <div class="ti-chip">
+          <span class="ti-chip-dot"></span> Reventa
+        </div>
+        <h5>Prendas casi nuevas</h5>
+        <p>
+          Piezas en muy buen estado que pueden venderse en <strong>Zara_Re</strong>.
+        </p>
+        <ul class="ti-list mt-1">
+          <li><span class="ti-bullet">✓</span> Inspección rápida y transparente.</li>
+          <li><span class="ti-bullet">✓</span> Recibes más saldo si se revende.</li>
+        </ul>
+        <p class="ti-meta mt-auto">
+          Ideal para prendas usadas pocas veces y sin daños visibles.
+        </p>
+      </article>
+    </div>
+
+    <!-- Reparación -->
+    <div class="col-md-4">
+      <article class="ti-card">
+        <div class="ti-chip">
+          <span class="ti-chip-dot"></span> Reparación
+        </div>
+        <h5>Favoritas con detalles</h5>
+        <p>
+          Prendas con <strong>pequeños daños</strong> que se pueden reparar.
+        </p>
+        <ul class="ti-list mt-1">
+          <li><span class="ti-bullet">✓</span> Talleres certificados.</li>
+          <li><span class="ti-bullet">✓</span> Recibes saldo según estado.</li>
+        </ul>
+        <p class="ti-meta mt-auto">
+          Recuperamos su valor antes de desecharlas.
+        </p>
+      </article>
+    </div>
+
+    <!-- Reciclaje -->
+    <div class="col-md-4">
+      <article class="ti-card">
+        <div class="ti-chip">
+          <span class="ti-chip-dot"></span> Reciclaje
+        </div>
+        <h5>Textiles al final de su vida</h5>
+        <p>
+          Transformación en nuevos materiales mediante <strong>reciclaje textil</strong>.
+        </p>
+        <ul class="ti-list mt-1">
+          <li><span class="ti-bullet">✓</span> Clasificación por fibras.</li>
+          <li><span class="ti-bullet">✓</span> Recibes un depósito simbólico.</li>
+        </ul>
+        <p class="ti-meta mt-auto">
+          Cuando ya no se puede reparar ni revender, reciclamos la fibra.
+        </p>
+      </article>
+    </div>
+  </div>
+
+  <!-- Paso a paso -->
+  <div class="ti-steps mt-4 mt-lg-5">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+      <div>
+        <div class="ti-steps-title">Cómo funciona el Trade-In</div>
+        <p class="mb-0" style="font-size:.86rem;color:var(--muted);">
+          Solo necesitas tus prendas ZARA y una cuenta.
+        </p>
+      </div>
+
+      <div class="mt-2 mt-sm-0">
+        {% if user.is_authenticated %}
+          <a href="{% url 'zara:wallet_view' %}" class="btn btn-dark btn-sm">
+            Ver mi Wallet Circular
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}?next={% url 'zara:tradein' %}" class="btn btn-dark btn-sm">
+            Ingresar
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <ul class="ti-step-list mt-2">
+      <li class="ti-step-item">
+        <span class="ti-step-num">1</span>
+        <span>Registra tus prendas: tipo, categoría y estado.</span>
+      </li>
+      <li class="ti-step-item">
+        <span class="ti-step-num">2</span>
+        <span>Recibes la clasificación: reventa, reparación o reciclaje.</span>
+      </li>
+      <li class="ti-step-item">
+        <span class="ti-step-num">3</span>
+        <span>El saldo se deposita en tu Wallet Circular.</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+{# === SECCIÓN ANTIGUA: FORMULARIO DE CANJE CIRCULAR === #}
+<section class="container my-5" style="max-width:640px;">
+  <h2 class="mb-3 fw-semibold" style="color:var(--mocha);">Canje Circular</h2>
+
+  {% if messages %}
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="card-elev p-4">
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label">Prenda</label>
+        <input type="text" name="prenda" class="form-control" placeholder="Ej: Chaqueta denim" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Categoría</label>
+        <select name="categoria" class="form-select" required>
+          <option value="">Selecciona una opción</option>
+          <option value="mujer">Mujer</option>
+          <option value="hombre">Hombre</option>
+          <option value="nina">Niña</option>
+          <option value="nino">Niño</option>
+          <option value="accesorios">Accesorios</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Estado</label>
+        <select name="estado" class="form-select" required>
+          <option value="">Selecciona una opción</option>
+          <option value="casi_nuevo">Casi nuevo</option>
+          <option value="con_detalles">Con detalles</option>
+          <option value="muy_usado">Muy usado</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Comentarios</label>
+        <textarea name="comentarios" class="form-control" rows="3" placeholder="Detalla manchas, roturas u otros detalles relevantes"></textarea>
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-dark">
+          Enviar prenda al Trade-In
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

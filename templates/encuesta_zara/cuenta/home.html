@@ -1,0 +1,324 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}Mi cuenta{% endblock %}
+
+{% block content %}
+<section class="container my-4 my-md-5" style="max-width: 1040px;">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+    <h1 class="h4 mb-0" style="color:var(--mocha);">Mi cuenta</h1>
+
+    <div class="d-flex gap-2">
+      <!-- Pasaporte Digital -->
+      <a href="/zara-re/pasaporte/" class="btn btn-outline-dark btn-sm" title="Ver pasaporte digital">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" class="me-1" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M4.5 2A1.5 1.5 0 0 0 3 3.5v9A1.5 1.5 0 0 0 4.5 14h7A1.5 1.5 0 0 0 13 12.5v-9A1.5 1.5 0 0 0 11.5 2h-7zM4 3.5A.5.5 0 0 1 4.5 3h7a.5.5 0 0 1 .5.5V5H4V3.5zM12 6v6.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V6h8z"/>
+        </svg>
+        Pasaporte Digital
+      </a>
+      <!-- Billetera Circular -->
+      <button type="button" class="btn btn-outline-dark btn-sm" onclick="toggleWallet()" title="Abrir billetera circular">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" class="me-1" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2h-1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h1v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm15 3h-1a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h1V7z"/>
+        </svg>
+        Billetera Circular
+      </button>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags }} mb-3">{{ m }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Accesos rápidos -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <a href="{% url 'zara:cuenta_pedidos' %}" class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <p class="mb-0 text-muted small">Historial</p>
+            <h6 class="mb-0">Mis pedidos</h6>
+          </div>
+          <span class="badge bg-success">2</span>
+        </div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
+      <a href="{% url 'zara:cuenta_direcciones' %}" class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <p class="mb-0 text-muted small">Env\u00edos</p>
+            <h6 class="mb-0">Direcciones</h6>
+          </div>
+          <span class="badge bg-dark">1</span>
+        </div>
+      </a>
+    </div>
+    <div class="col-12 col-md-4">
+      <a href="/accounts/password_reset/" class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <p class="mb-0 text-muted small">Seguridad</p>
+            <h6 class="mb-0">Recuperar contraseña</h6>
+          </div>
+          <span class="badge bg-warning text-dark">Tip</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Perfil / datos personales -->
+    <div class="col-12 col-lg-7">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Datos personales</h2>
+          <form method="post" action="" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="perfil_update">
+
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Nombre a mostrar</label>
+                <input
+                  type="text"
+                  name="nombre_mostrar"
+                  class="form-control"
+                  value="{{ perfil.nombre_mostrar|default:request.user.get_full_name|default:request.user.username }}"
+                  maxlength="120"
+                  placeholder="Ej: Natalia C.">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label">Correo electrónico</label>
+                <input
+                  type="email"
+                  name="email"
+                  class="form-control"
+                  value="{{ request.user.email }}"
+                  required>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label">Fecha de nacimiento</label>
+                <input
+                  type="date"
+                  name="fecha_nacimiento"
+                  class="form-control"
+                  value="{{ perfil.fecha_nacimiento|date:'Y-m-d' }}">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label d-block">Apariencia</label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="themeSwitch">
+                  <label class="form-check-label" for="themeSwitch">
+                    <span id="themeLabel">Tema claro</span>
+                  </label>
+                </div>
+                <input
+                  type="hidden"
+                  name="preferencia_tema"
+                  id="preferenciaTemaField"
+                  value="{{ perfil.preferencia_tema|default:'light' }}">
+              </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+              <button type="submit" class="btn btn-dark">Guardar cambios</button>
+              <a href="{% url 'zara:cuenta_home' %}" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cambio de contraseña -->
+    <div class="col-12 col-lg-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Cambiar contraseña</h2>
+          <form method="post" action="" novalidate>
+            {% csrf_token %}
+            <input type="hidden" name="action" value="password_change">
+
+            <div class="mb-3">
+              <label class="form-label">Contraseña actual</label>
+              <div class="input-group">
+                <input type="password" name="old_password" id="oldPassword" class="form-control" required>
+                <button class="btn btn-outline-secondary" type="button" data-toggle="pw" data-target="#oldPassword">👁</button>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Nueva contraseña</label>
+              <div class="input-group">
+                <input type="password" name="new_password1" id="newPassword1" class="form-control" required>
+                <button class="btn btn-outline-secondary" type="button" data-toggle="pw" data-target="#newPassword1">👁</button>
+              </div>
+              <div class="progress mt-2" style="height:6px;">
+                <div id="pwBar" class="progress-bar" style="width:0%"></div>
+              </div>
+              <ul id="pwHints" class="small mt-2 mb-0 list-unstyled">
+                <li class="text-muted" data-rule="len8">Al menos 8 caracteres</li>
+                <li class="text-muted" data-rule="upper">Alguna mayúscula</li>
+                <li class="text-muted" data-rule="lower">Alguna minúscula</li>
+                <li class="text-muted" data-rule="digit">Algún número</li>
+              </ul>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Confirmar nueva contraseña</label>
+              <div class="input-group">
+                <input type="password" name="new_password2" id="newPassword2" class="form-control" required>
+                <button class="btn btn-outline-secondary" type="button" data-toggle="pw" data-target="#newPassword2">👁</button>
+              </div>
+              <div id="matchHelp" class="form-text"></div>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100">Actualizar contraseña</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= -->
+<!-- MODAL: Billetera Circular -->
+<!-- ============================= -->
+<div id="walletModal" class="wallet-overlay" style="display:none;">
+  <div class="wallet-content card shadow-lg p-4 text-center" style="max-width:420px;margin:auto;border-radius:16px;">
+    <h5 class="fw-semibold mb-2" style="color:var(--mocha);">Billetera Circular</h5>
+    <p class="text-muted small mb-3">Saldo acumulado por prendas devueltas o recicladas:</p>
+    <h2 style="color:var(--tendril);font-weight:700;">$4.800 CLP</h2>
+    <p class="small text-muted mb-4">Equivalente a 2 prendas recicladas</p>
+
+    <div class="text-start border-top pt-3 mt-3 small">
+      <p class="mb-1 fw-semibold">Últimos movimientos</p>
+      <ul class="list-unstyled mb-3" style="line-height:1.6;">
+        <li>+ $2.400 — Devolución “Trench liviano” (11/11/25)</li>
+        <li>+ $2.400 — Reciclaje “Blazer Mocha” (08/11/25)</li>
+      </ul>
+    </div>
+
+    <button class="btn btn-primary rounded-pill px-4" onclick="toggleWallet()">Cerrar</button>
+  </div>
+</div>
+
+<style>
+  .wallet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99;
+    backdrop-filter: blur(3px);
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* ---------- Tema claro / oscuro ---------- */
+(function(){
+  const STORAGE_KEY = "zara_theme";
+  const html = document.documentElement;
+  const switchEl = document.getElementById('themeSwitch');
+  const labelEl  = document.getElementById('themeLabel');
+  const hidden   = document.getElementById('preferenciaTemaField');
+
+  function applyTheme(mode){
+    html.setAttribute('data-bs-theme', mode === 'dark' ? 'dark' : 'light');
+    if(labelEl) labelEl.textContent = mode === 'dark' ? 'Tema oscuro' : 'Tema claro';
+    if(switchEl) switchEl.checked = (mode === 'dark');
+    if(hidden) hidden.value = mode;
+    localStorage.setItem(STORAGE_KEY, mode);
+  }
+
+  const initial = (hidden?.value || localStorage.getItem(STORAGE_KEY) || 'light');
+  applyTheme(initial);
+
+  switchEl?.addEventListener('change', () => {
+    applyTheme(switchEl.checked ? 'dark' : 'light');
+  });
+})();
+
+/* ---------- Mostrar / ocultar contraseña ---------- */
+document.querySelectorAll('[data-toggle="pw"]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = document.querySelector(btn.getAttribute('data-target'));
+    if(target) target.type = target.type === 'password' ? 'text' : 'password';
+  });
+});
+
+/* ---------- Fuerza de contraseña ---------- */
+(function(){
+  const p1 = document.getElementById('newPassword1');
+  const p2 = document.getElementById('newPassword2');
+  const bar = document.getElementById('pwBar');
+  const hints = document.getElementById('pwHints');
+  const matchHelp = document.getElementById('matchHelp');
+
+  if(!p1 || !p2) return;
+
+  const rules = {
+    len8:  v => v.length >= 8,
+    upper: v => /[A-ZÁÉÍÓÚÑ]/.test(v),
+    lower: v => /[a-záéíóúñ]/.test(v),
+    digit: v => /\d/.test(v),
+  };
+
+  function paintHints(v){
+    const wrote = v.length > 0;
+    let okCount = 0;
+    Object.entries(rules).forEach(([k,fn])=>{
+      const li = hints?.querySelector(`[data-rule="${k}"]`);
+      if(!li) return;
+      const ok = fn(v);
+      if(ok) okCount++;
+      li.classList.remove('text-muted','text-success','text-danger');
+      li.classList.add(ok ? 'text-success' : (wrote ? 'text-danger' : 'text-muted'));
+    });
+    const pct = (okCount/4)*100;
+    if(bar){
+      bar.style.width = pct + '%';
+      bar.classList.remove('bg-danger','bg-warning','bg-success');
+      if(pct < 50) bar.classList.add('bg-danger');
+      else if(pct < 100) bar.classList.add('bg-warning');
+      else bar.classList.add('bg-success');
+    }
+  }
+
+  function paintMatch(){
+    const v1 = p1.value, v2 = p2.value;
+    if(!matchHelp) return;
+    if(!v2){ matchHelp.textContent=''; return; }
+    if(v1 === v2){
+      matchHelp.textContent='Las contraseñas coinciden.';
+      matchHelp.classList.add('text-success');
+      matchHelp.classList.remove('text-danger');
+    } else {
+      matchHelp.textContent='Las contraseñas no coinciden.';
+      matchHelp.classList.add('text-danger');
+      matchHelp.classList.remove('text-success');
+    }
+  }
+
+  p1.addEventListener('input', ()=>{ paintHints(p1.value); paintMatch(); });
+  p2.addEventListener('input', paintMatch);
+  paintHints('');
+})();
+
+/* ---------- Wallet modal ---------- */
+function toggleWallet(){
+  const modal = document.getElementById("walletModal");
+  if(!modal) return;
+  modal.style.display = (modal.style.display === "none" || modal.style.display === "") ? "flex" : "none";
+}
+</script>
+{% endblock %}

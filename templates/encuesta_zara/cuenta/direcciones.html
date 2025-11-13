@@ -1,0 +1,84 @@
+{% extends "encuesta_zara/base.html" %}
+{% load static %}
+
+{% block title %}Direcciones · ZARA{% endblock %}
+
+{% block content %}
+<section class="container my-5" style="max-width:820px;">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <h2 class="fw-semibold" style="color:var(--mocha);">Direcciones guardadas</h2>
+
+    <div class="d-flex gap-2">
+      <!-- Botón Pasaporte Digital -->
+      <a href="/zara-re/pasaporte/" class="btn btn-outline-dark btn-sm" title="Ver pasaporte digital">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+          <path d="M4.5 2A1.5 1.5 0 0 0 3 3.5v9A1.5 1.5 0 0 0 4.5 14h7A1.5 1.5 0 0 0 13 12.5v-9A1.5 1.5 0 0 0 11.5 2h-7zM4 3.5A.5.5 0 0 1 4.5 3h7a.5.5 0 0 1 .5.5V5H4V3.5zM12 6v6.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V6h8z"/>
+        </svg>
+        Pasaporte Digital
+      </a>
+
+      <!-- Botón Billetera Circular -->
+      <button class="btn btn-outline-dark btn-sm" onclick="toggleWallet()" title="Abrir billetera circular">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="me-1" viewBox="0 0 16 16">
+          <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2h-1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h1v2a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm15 3h-1a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h1V7z"/>
+        </svg>
+        Billetera Circular
+      </button>
+    </div>
+  </div>
+
+  <!-- Dirección principal -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <h6 class="fw-bold mb-1">Dirección principal</h6>
+      <p class="text-muted mb-1">Av. Providencia 1234, Santiago, Chile</p>
+      <p class="text-muted small mb-3">Teléfono: +56 9 1234 5678</p>
+      <a href="#" class="btn btn-outline-dark btn-sm">Editar</a>
+    </div>
+  </div>
+
+  <a href="#" class="btn btn-dark rounded-pill px-4">Agregar nueva dirección</a>
+</section>
+
+<!-- ============================= -->
+<!-- MODAL: Billetera Circular -->
+<!-- ============================= -->
+<div id="walletModal" class="wallet-overlay" style="display:none;">
+  <div class="wallet-content card shadow-lg p-4 text-center" style="max-width:420px;margin:auto;border-radius:16px;">
+    <h5 class="fw-semibold mb-2" style="color:var(--mocha);">Billetera Circular</h5>
+    <p class="text-muted small mb-3">Saldo acumulado por prendas devueltas o recicladas:</p>
+    <h2 style="color:var(--tendril);font-weight:700;">$4.800 CLP</h2>
+    <p class="small text-muted mb-4">Equivalente a 2 prendas recicladas</p>
+
+    <div class="text-start border-top pt-3 mt-3 small">
+      <p class="mb-1 fw-semibold">Últimos movimientos</p>
+      <ul class="list-unstyled mb-3" style="line-height:1.6;">
+        <li>+ $2.400 — Devolución “Trench liviano” (11/11/25)</li>
+        <li>+ $2.400 — Reciclaje “Blazer Mocha” (08/11/25)</li>
+      </ul>
+    </div>
+
+    <button class="btn btn-primary rounded-pill px-4" onclick="toggleWallet()">Cerrar</button>
+  </div>
+</div>
+
+<style>
+  .wallet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99;
+    backdrop-filter: blur(3px);
+  }
+</style>
+
+<script>
+  function toggleWallet(){
+    const modal = document.getElementById("walletModal");
+    modal.style.display = modal.style.display === "none" ? "flex" : "none";
+  }
+</script>
+{% endblock %}
